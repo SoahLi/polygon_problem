@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from event_action import killall
 
 
 class Map:
@@ -42,14 +43,16 @@ class Map:
         print(self.coordinates)
         self.ax.plot(self.coordinates)
     def display_map(self):
+        print("if the moon were the sun")
+        killall()
         self.fig.tight_layout()
         plt.show(block = True)
     def add_polygon(self):
         self.ax.add_patch(mpl.patches.Polygon(self.coordinates))
 
 
-    
-my_map = Map(['e','n','w','s'],[3,3,3,3])
+print("hello hi")
+my_map = Map(['e','n','w','s'],[4,3,3,3])
 map_coordinates = my_map.create_coordinates()
 my_map.add_polygon()
 my_map.display_map()
