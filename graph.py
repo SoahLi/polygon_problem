@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.patches import PathPatch
 from matplotlib.path import Path
+from shapely.geometry import Polygon
+import geopandas as gpd
 
 
 class Map:
@@ -103,17 +105,13 @@ class Map:
 #map_coordinates = my_map.create_coordinates()
 #my_map.add_polygon()
 #my_map.display_map()
+poly1 = Polygon( [(0, 0), (1,0), (1,1), (0,1) ] )
+poly2 = Polygon( [(0.25, 0.25), (0.5,0.25), (0.5,0.5), (0.25,0.5) ] )
+polydiff = poly1.difference(poly2)
+
+myPoly = gpd.GeoSeries([polydiff])
+myPoly.plot()
+plt.show()
 
 
-axes = plt.gca()
-
-path = Path([(2,2)      ,(2,-2)     ,(-2,-2)    ,(-2,2)     ,(0,0)         ,(1,0)      ,(-1,1)     ,(-1,-1)    ,(0,0)         ],
-            [Path.MOVETO,Path.LINETO,Path.LINETO,Path.LINETO,Path.CLOSEPOLY,Path.MOVETO,Path.LINETO,Path.LINETO,Path.CLOSEPOLY])
-patch = PathPatch(path)
-axes.set_xlim(-3,3)
-axes.set_ylim(-3,3)
-axes.add_patch(patch)
-
-
-plt.show(block=True)
         
