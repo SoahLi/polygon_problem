@@ -1,7 +1,7 @@
 import subprocess
 def killall():
     print("hello")
-    command = "sudo killall Python"
+    command = "killall Python"
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = process.communicate()
     if process.returncode == 0:
