@@ -6,7 +6,6 @@ from shapely.geometry import Polygon
 from descartes import PolygonPatch
 import geopandas as gpd
 import pandas as pd
-
 class Map:
     cardinal_directions = {
         "n": ["", "+"],
@@ -22,24 +21,21 @@ class Map:
         # self.fig, self.ax = plt.subplots()
         # self.ax.set_xticks([0,5,10,15])
         # self.ax.set_yticks([0,5,10,15])
-        self.graph = gpd.GeoSeries()
-        print('before')
-        print(self.graph)
-        print('\n\n')
+        self.polygons = []
         #variables for methods
         self.line_lengths = line_lengths
         self.directions = directions
         self.num_lines = len(line_lengths)
-        self.coordinates = []
+        self.map_coordinates = []
         self.length, self.width = 0, 0
         self.border = []
         if line_lengths and directions:
-            self.coordinates = self.create_coordinates()
+            self.map = self.add_polygon(self.create_map_coordinates())
             self.length, self.width = self.find_area()
             self.border = self.create_border()
         
 
-    def create_coordinates(self):
+    def create_map_coordinates(self):
         x_coordinates = [0]
         y_coordinates = [0]
         for i in range(self.num_lines):
@@ -60,9 +56,9 @@ class Map:
                 if x_coordinates[-1] < 0:
                     x_coordinates = self.shift_graph_to_positive(x_coordinates, -x_coordinates[-1])
         for i in range(self.num_lines):
-            self.coordinates.append((x_coordinates[i], y_coordinates[i]))
+            self.map_coordinates.append((x_coordinates[i], y_coordinates[i]))
         self.find_area()
-        return self.coordinates
+        return self.map_coordinates
     
     def create_border(self):
         pass
@@ -75,7 +71,7 @@ class Map:
     def find_area(self):
         largest_x = 0
         largest_y = 0
-        for coord in self.coordinates:
+        for coord in self.map_coordinates:
             current_x = coord[0]
             current_y = coord[1]
             if current_x > largest_x:
@@ -86,43 +82,49 @@ class Map:
             
 
     def plot_map(self):
-        self.ax.plot(self.coordinates)
+        self.ax.plot(self.map_coordinates)
         
     def display_map(self):
-        self.graph.plot()
+        print("before")
+        for polygon in self.polygons:
+            print(polygon)
+        print("after")
+        print("\n\n\n")
+        res = pd.concat([polygon for polygon in self.polygons])
+        res.plot(color=['b'] + ['r' for _ in range(len(res.values) - 1)])
         plt.show()
 
     def close_map(self):
         plt.close()
 
-    def add_polygon(self, coordinates=[], my_color='blue'):
+    def add_polygon(self, coordinates=[]):
         if not coordinates:
-            if not self.coordinates:
                 print("please input shape coordinates")
-            else:
-                self.graph = pd.concat([self.graph, gpd.GeoSeries([PolygonPatch(Polygon(self.coordinates), facecolor=my_color)])])
-                print('after')
-                print(self.graph)
         else:
-            print("\n\n\n\n")
-            self.graph = pd.concat([self.graph, gpd.GeoSeries([Polygon(coordinates)])])
-            print('after')
-            print(self.graph)
-            print('\n\n')
+            print("im in here!!!")
+            self.polygons.append((gpd.GeoSeries([Polygon(coordinates)])))
         # if not coordinates:
-        #     self.ax.add_patch(mpl.patches.Polygon(self.coordinates, color=my_color))
+        #     self.ax.add_patch(mpl.patches.Polygon(self.map_coordinates, color=my_color))
         # else:
         #     self.ax.add_patch(mpl.patches.Polygon(coordinates, color=my_color))
 
-#my_map = Map(['s','e','n','e', 'n', 'w', 'n', 'w', 's', ],[3,3,3,3,3,4,2,2,5])
+my_map = Map(['s','e','n','e', 'n', 'w', 'n', 'w', 's', ],[3,3,3,3,3,4,2,2,5])
 #my_map = Map(['w','s','e','n'], [3,3,3,3])
 #my_map = Map()
-#map_coordinates = my_map.create_coordinates()
-#my_map.add_polygon()
-#my_map.add_polygon([(0,0),(0,1),(1,1),(1,0)], "red")
-#my_map.display_map()
+#map_coordinates = my_map.create_map_coordinates()
+my_map.add_polygon([(0, 0), (5,0), (5,5), (0,5)])
+#my_map.add_polygon([(0,0),(0,1),(1,1),(1,0)])
+my_map.display_map()
 
-plt.plot(PolygonPatch(Polygon([0,0,5,0,5,5,0,5]), facecolor="blud"))
+# my_polygon = (Polygon([(0, 0), (5,0), (5,5), (0,5)]))
+# my_graph = gpd.GeoSeries(my_polygon)
+# my_polygon2 =  (Polygon([(1, 1), (6,1), (6,6), (1,6)]))
+# my_graph2 = gpd.GeoSeries(my_polygon2)
+# res = pd.concat([my_graph, my_graph2])
+# print(res.values)
+# res.plot(color=['b'] + ['r' for _ in range(len(res.values) - 1)])
+# plt.show()
+
 
 # my_poly = gpd.GeoSeries([Polygon([(0, 0), (5,0), (5,5), (0,5)])])
 # print("this is the poly")
