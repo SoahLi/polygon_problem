@@ -1,26 +1,27 @@
-from map import Map
+from Map import Map
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
 
 my_map = Map(['s', 'e', 'n', 'e', 'n', 'w', 'n', 'w', 's'], [3, 3, 3, 3, 3, 4, 2, 2, 5])
-my_map.add_polygon([(0, 0), (5, 0), (5, 5), (0, 5)])
-my_map.add_polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
-my_map.add_polygon([(5, 5), (7, 5), (7, 7), (5, 7)])
+#my_map.add_polygon([(0, 0), (5, 0), (5, 5), (0, 5)])
+#my_map.add_polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
+#my_map.add_polygon([(5, 5), (7, 5), (7, 7), (5, 7)])
 objects = my_map.polygons
 
 fig, ax = plt.subplots()  # Create a figure and axis
 
 def restart():
-    print("hello")
     ax.clear()
-    objects[0].plot(ax = ax, color="blue") 
-
+    
+objects[0].plot(ax = ax, color="blue") 
+objects[1].plot(ax = ax, color="red")
 
 def update(frame):
     frame.plot(ax=ax, color = "red")  # Plot the GeoSeries on the specified axis
 
-ani = FuncAnimation(fig, update, frames=objects[1:], init_func = restart, repeat = True)
+#ani = FuncAnimation(fig, update, frames=objects[1:], init_func = restart, repeat = True)
+
 plt.show()
 
 
