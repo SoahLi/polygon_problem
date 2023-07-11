@@ -2,62 +2,56 @@ from shapely.geometry import Polygon
 import geopandas as gpd
 
 class Map:
-    cardinal_directions = {
+    def __init__(self, directions, line_lengths):
+        if not line_lengths and not directions:
+            return
+        if len(line_lengths) != len(directions):
+            IndexExror: print("amount of lines and their dircetions do not match")
+            return
+        #self.map = self.create_map_coordinates()
+        self.map = Polygon(self.create_map_coordinates(line_lengths, directions))
+        self.width, self.height = self.find_area()
+        self.border = self.create_border()
+        self.width, self.height = 0, 0
+        
+    def create_map_coordinates(self, line_lengths, directions):
+        num_lines = len(line_lengths)
+        x_coordinates = [0]
+        y_coordinates = [0]
+        cardinal_directions = {
         "n": ["", "+"],
         "e": ["+", ""],
         "s": ["", "-"],
         "w": ["-", ""],
-    }
-
-    def __init__(self, directions=[], line_lengths=[]):
-        if len(line_lengths) != len(directions):
-            IndexError: print("amount of lines and their dircetions do not match")
-        self.polygons = []
-        self.line_lengths = line_lengths
-        self.directions = directions
-        self.num_lines = len(line_lengths)
-        self.map_coordinates = []
-        self.width, self.height = 0, 0
-        self.border_coordinates = []
-        if line_lengths and directions:
-            self.map = self.add_polygon(self.create_map_coordinates())
-            self.width, self.height = self.find_area()
-            self.border_coordinates = self.create_border()
-        
-
-    def create_map_coordinates(self):
-        x_coordinates = [0]
-        y_coordinates = [0]
-        for i in range(self.num_lines):
-            if self.directions[i] == "n":
+        }
+        for i in range(num_lines):
+            if directions[i] == "n":
                 x_coordinates.append(x_coordinates[-1] + 0)
-                y_coordinates.append(y_coordinates[-1] + self.line_lengths[i])
-            elif self.directions[i] == "e":
-                x_coordinates.append(x_coordinates[-1] + self.line_lengths[i])
+                y_coordinates.append(y_coordinates[-1] + line_lengths[i])
+            elif directions[i] == "e":
+                x_coordinates.append(x_coordinates[-1] + line_lengths[i])
                 y_coordinates.append(y_coordinates[-1] + 0)                 
-            elif self.directions[i] == "s":
+            elif directions[i] == "s":
                 x_coordinates.append(x_coordinates[-1] + 0)
-                y_coordinates.append(y_coordinates[-1] - self.line_lengths[i])
+                y_coordinates.append(y_coordinates[-1] - line_lengths[i])
                 if y_coordinates[-1] < 0:
                     y_coordinates = self.shift_graph(y_coordinates, -y_coordinates[-1])
-            elif self.directions[i] == "w":
-                x_coordinates.append(x_coordinates[-1] - self.line_lengths[i])
+            elif directions[i] == "w":
+                x_coordinates.append(x_coordinates[-1] - line_lengths[i])
                 y_coordinates.append(y_coordinates[-1] + 0)
                 if x_coordinates[-1] < 0:
                     x_coordinates = self.shift_graph(x_coordinates, -x_coordinates[-1])
-        #x_coordinates, y_coordinates = self.shift_graph(x_coordinates, 2), self.shift_graph(y_coordinates, 2)
-        for i in range(self.num_lines):
-            self.map_coordinates.append((x_coordinates[i], y_coordinates[i]))
+        #x_coordinates, y_coordinates = shift_graph(x_coordinates, 2), shift_graph(y_coordinates, 2)
         
-        return self.map_coordinates
+        return [(x, y) for x, y in zip(x_coordinates, y_coordinates)]
+    
     
     def create_border(self):
         """
         Creates border for Map Object
         """
         self.border_coordinates = Polygon([(-2,-2),(self.width,-2), (self.width, self.height), (-2, self.height)])
-        self.border_coordinates = self.border_coordinates.symmetric_difference(self.polygons[0])
-        self.polygons.append(self.border_coordinates)
+        self.border_coordinates = self.border_coordinates.symmetric_difference(self.map)
         return self.border_coordinates
 
     def shift_graph(self, coordinates, length):
@@ -74,7 +68,7 @@ class Map:
     def find_area(self):
         largest_x = 0
         largest_y = 0
-        for coord in self.map_coordinates:
+        for coord in self.map.exterior.coords:
             current_x = coord[0]
             current_y = coord[1]
             if current_x > largest_x:
@@ -84,15 +78,17 @@ class Map:
         return largest_x+2, largest_y+2
 
 
+
+
+"""
+    REMOVED METHODS
+
     def add_polygon(self, coordinates=[]):
         if not coordinates:
                 print("please input shape coordinates")
         else:
             self.polygons.append((gpd.GeoSeries([Polygon(coordinates)])))
 
-
-"""
-    REMOVED METHODS
 
     self.fig, self.ax = plt.subplots()
     self.ax.set_xticks([0,5,10,15])

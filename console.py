@@ -4,34 +4,17 @@ from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
 from shapely.geometry import Polygon
+from Graph import Graph
 import csv
 
-
-fig, ax = plt.subplots()
-ax.set_xticks([tick for tick in range(0,100,10)])
-ax.set_yticks([tick for tick in range(0,100,10)])
-my_piece = Piece(2,3)
-my_map = Map(['e','n','w','s'], [20,20,20,20])
-objects = my_map.polygons
-print(objects[1])
-objects[0].plot(ax = ax, color="blue") 
-objects[1].plot(ax = ax, color="red")   
-my_piece_orientations = my_piece.get_orientations()
-
-def update(frame):
-    if len(ax.collections) > 2:
-        ax.collections[len(ax.collections)-1].remove()
-    gpd.GeoSeries(Polygon(frame)).plot(ax = ax, color='purple')
-
-
-
-ani = FuncAnimation(fig, update, frames=my_piece_orientations, repeat=True, interval = 500)
-plt.show()
+my_map = Map(['s', 'e', 'n', 'e', 'n', 'w', 'n', 'w', 's'], [3, 3, 3, 3, 3, 4, 2, 2, 5])
+my_graph = Graph(my_map, [Piece(2,3), Piece(4,1)])
+my_graph.plot_map()
+my_graph.display_graph(animate=True)
 
 
 """
-my_map = Map(['s', 'e', 'n', 'e', 'n', 'w', 'n', 'w', 's'], [3, 3, 3, 3, 3, 4, 2, 2, 5])
-#my_map.add_polygon([(0, 0), (5, 0), (5, 5), (0, 5)])
+#my_map.add_polygon([(0, 0), (5, 0), (5, 5), (0, 5)])™
 #my_map.add_polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
 #my_map.add_polygon([(5, 5), (7, 5), (7, 7), (5, 7)])
     
