@@ -45,7 +45,7 @@ class Map:
                 y_coordinates.append(y_coordinates[-1] + 0)
                 if x_coordinates[-1] < 0:
                     x_coordinates = self.shift_graph(x_coordinates, -x_coordinates[-1])
-        x_coordinates, y_coordinates = self.shift_graph(x_coordinates, 2), self.shift_graph(y_coordinates, 2)
+        #x_coordinates, y_coordinates = self.shift_graph(x_coordinates, 2), self.shift_graph(y_coordinates, 2)
         for i in range(self.num_lines):
             self.map_coordinates.append((x_coordinates[i], y_coordinates[i]))
         
@@ -55,7 +55,7 @@ class Map:
         """
         Creates border for Map Object
         """
-        self.border_coordinates = Polygon([(0,0),(self.width,0), (self.width, self.height), (0, self.height)])
+        self.border_coordinates = Polygon([(-2,-2),(self.width,-2), (self.width, self.height), (-2, self.height)])
         self.border_coordinates = self.border_coordinates.symmetric_difference(self.polygons[0])
         self.polygons.append(self.border_coordinates)
         return self.border_coordinates
@@ -81,7 +81,6 @@ class Map:
                 largest_x = current_x
             if current_y > largest_y:
                 largest_y = current_y
-        print(largest_x,largest_y)
         return largest_x+2, largest_y+2
 
 
@@ -90,7 +89,7 @@ class Map:
                 print("please input shape coordinates")
         else:
             self.polygons.append((gpd.GeoSeries([Polygon(coordinates)])))
-        
+
 
 """
     REMOVED METHODS

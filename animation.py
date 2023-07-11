@@ -8,13 +8,24 @@ import csv
 
 
 fig, ax = plt.subplots()
+ax.set_xticks([tick for tick in range(0,100,10)])
+ax.set_yticks([tick for tick in range(0,100,10)])
 my_piece = Piece(2,3)
+my_map = Map(['e','n','w','s'], [20,20,20,20])
+objects = my_map.polygons
+print(objects[1])
+objects[0].plot(ax = ax, color="blue") 
+objects[1].plot(ax = ax, color="red")   
+my_piece_orientations = my_piece.get_orientations()
 
 def update(frame):
-    ax.clear()
-    gpd.GeoSeries([Polygon(frame)]).plot(ax = ax, color='blue')
+    if len(ax.collections) > 2:
+        ax.collections[len(ax.collections)-1].remove()
+    gpd.GeoSeries(Polygon(frame)).plot(ax = ax, color='purple')
 
-ani = FuncAnimation(fig, update, frames=my_piece.get_orientations(), repeat=True)
+
+
+ani = FuncAnimation(fig, update, frames=my_piece_orientations, repeat=True, interval = 500)
 plt.show()
 
 
