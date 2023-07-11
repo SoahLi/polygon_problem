@@ -1,8 +1,5 @@
-import matplotlib.pyplot as plt
 from shapely.geometry import Polygon
 import geopandas as gpd
-import geopandas.geoseries as gs
-import pandas as pd
 
 class Map:
     cardinal_directions = {
@@ -93,7 +90,7 @@ class Map:
                 print("please input shape coordinates")
         else:
             self.polygons.append((gpd.GeoSeries([Polygon(coordinates)])))
-
+        
 
 """
     REMOVED METHODS

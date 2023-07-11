@@ -1,12 +1,34 @@
 from Map import Map
+from Piece import Piece
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
+from shapely.geometry import Polygon
+import csv
 
+
+fig, ax = plt.subplots()
+my_piece = Piece(2,3)
+
+def update(frame):
+    ax.clear()
+    gpd.GeoSeries([Polygon(frame)]).plot(ax = ax, color='blue')
+
+ani = FuncAnimation(fig, update, frames=my_piece.get_orientations(), repeat=True)
+plt.show()
+
+
+"""
 my_map = Map(['s', 'e', 'n', 'e', 'n', 'w', 'n', 'w', 's'], [3, 3, 3, 3, 3, 4, 2, 2, 5])
 #my_map.add_polygon([(0, 0), (5, 0), (5, 5), (0, 5)])
 #my_map.add_polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
 #my_map.add_polygon([(5, 5), (7, 5), (7, 7), (5, 7)])
+    
+
+with open("pieces.csv", "r") as pieces:
+    example = pieces.readline(1)
+    print(example)
+
 objects = my_map.polygons
 
 fig, ax = plt.subplots()  # Create a figure and axis
@@ -21,8 +43,7 @@ def update(frame):
     frame.plot(ax=ax, color = "red")  # Plot the GeoSeries on the specified axis
 
 #ani = FuncAnimation(fig, update, frames=objects[1:], init_func = restart, repeat = True)
-
-plt.show()
+"""
 
 
 #test = my_map.plot_map()
