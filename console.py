@@ -10,7 +10,8 @@ import csv
 my_map = Map(['s', 'e', 'n', 'e', 'n', 'w', 'n', 'w', 's'], [3, 3, 3, 3, 3, 4, 2, 2, 5])
 my_graph = Graph(my_map, [Piece(2,3), Piece(4,1)])
 my_graph.plot_map()
-my_graph.display_graph(animate=True)
+my_graph.animate(interval=10)
+my_graph.display_graph()
 
 
 """

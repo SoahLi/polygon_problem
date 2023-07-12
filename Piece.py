@@ -38,7 +38,6 @@ class Piece:
         orientations.append(flip_right(orientations[6]))
         for i in range(len(orientations)):
             orientations[i] = gpd.GeoSeries(Polygon(orientations[i]))
-
         return orientations
 
     def get_width(self):
