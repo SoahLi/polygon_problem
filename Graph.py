@@ -1,10 +1,12 @@
 from Map import Map
 from Piece import Piece
+import itertools
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
 from shapely.geometry import Polygon
 import csv
+import time
 
 class Graph:
     def __init__(self, map: Map, pieces: list):
@@ -15,19 +17,14 @@ class Graph:
         self.pieces = pieces
         self.animation = None
         self.current_piece_index = 0
-    def animate(self, interval = 1000):
+        self.total_pieces_placed = 2
+    def animate(self, interval: int = 1000):
         def update(obj):
+            if len(self.ax.collections) > self.total_pieces_placed:
+                self.ax.collections[self.total_pieces_placed-self.current_piece_index].remove()
             obj.plot(ax=self.ax, color='red')
-            if len(self.ax.collections) > 2:
-                print(self.current_piece_index)
-                self.ax.collections[2-self.current_piece_index].remove()
-        def next_piece():
-            for i in range(2, len(self.pieces)):
-                self.ax.collections[i].remove()
-            if self.current_piece_index != len(self.pieces):
-                self.current_piece_index += 1
-            
-        self.animation = FuncAnimation(self.fig, update, frames=self.pieces[self.current_piece_index].get_orientations(), repeat=True, interval=interval, init_func=next_piece)
+        ani = FuncAnimation(self.fig, update, frames=list(itertools.chain.from_iterable([obj.get_orientations() for obj in self.pieces])), interval=interval)
+
 
     def plot_map(self):
         gpd.GeoSeries(self.map.map).plot(ax = self.ax, color='blue')
@@ -36,3 +33,14 @@ class Graph:
         if animate:
             self.animate()
         plt.show(block = True)
+
+
+
+
+
+
+#        def update(obj):
+#            obj.plot(ax=self.ax, color='red')
+#            if len(self.ax.collections) > 2:
+#                print(self.current_piece_index)
+#                self.ax.collections[2-self.current_piece_index].remove()
