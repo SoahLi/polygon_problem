@@ -37,8 +37,17 @@ class Piece:
         orientations.append(flip_down(orientations[5]))
         orientations.append(flip_right(orientations[6]))
         for i in range(len(orientations)):
-            orientations[i] = gpd.GeoSeries(Polygon(orientations[i]))
+            orientations[i] = self.Oritentation(orientations[i])
         return orientations
+    
+    class Oritentation:
+        def __init__(self,coordinates):
+            self.score = None
+            self.coordinates= coordinates
+        def set_score(self, score):
+            self.score = score
+
+
 
     def get_width(self):
         return self.width
@@ -60,3 +69,4 @@ class Piece:
     def set_orientations(self, orientations):
         self.orientations = orientations
         return self.orientations
+    
