@@ -4,7 +4,7 @@ import itertools
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, LineString
 import csv
 import time
 
@@ -14,11 +14,29 @@ class Graph:
         self.ax.set_xticks([0,5,10,15])
         self.ax.set_yticks([0,5,10,15])
         self.map = map
+        self.border = map.border
         self.pieces = pieces
         self.animation = None
         self.current_piece_index = 0
-        self.total_pieces_placed = 2
-    def animate(self, interval: int = 1000):
+        self.total_pieces_placed = 2 + len(self.map.invisible_lines)
+    
+    """
+    SETS PIECES OUTSIDE OF MAP
+    """
+    def start_solve(self):
+        for piece in self.pieces:
+            for orientation in piece.orientations:
+                cur_orientation = gpd.GeoSeries(Polygon(orientation.coordinates))
+                cur_orientation.plot(ax=self.ax)
+                print(cur_orientation.touches(self.border, align=False))
+                # UNKOWN WHY THE CODE BELOW WORKS
+                if cur_orientation.touches(self.border, align=True).bool():
+                    pass
+                else:
+                    self.ax.collections[-1].remove()
+
+
+    def animate(self, interval: int = 100):
         def update(obj):
             if len(self.ax.collections) > self.total_pieces_placed:
                 self.ax.collections[self.total_pieces_placed-self.current_piece_index].remove()
@@ -27,11 +45,17 @@ class Graph:
 
 
     def plot_map(self):
+        for line in self.map.invisible_lines:
+            gpd.GeoSeries(line).plot(ax=self.ax, color='purple')
         gpd.GeoSeries(self.map.map).plot(ax = self.ax, color='blue')
-        gpd.GeoSeries(self.map.border).plot(ax = self.ax, color='white')
+        self.border = gpd.GeoSeries(self.map.border)
+        self.border.plot(ax = self.ax, color='white')
+
+    
     def display_graph(self, animate: bool = False):
         if animate:
             self.animate()
+        
         plt.show(block = True)
 
 

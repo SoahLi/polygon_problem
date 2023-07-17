@@ -1,4 +1,4 @@
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, LineString
 import geopandas as gpd
 
 class Map:
@@ -9,9 +9,12 @@ class Map:
             IndexExror: print("amount of lines and their dircetions do not match")
             return
         #self.map = self.create_map_coordinates()
-        self.map = Polygon(self.create_map_coordinates(line_lengths, directions))
+        self.map_coordinates = self.create_map_coordinates(line_lengths, directions)
+        self.map = Polygon(self.map_coordinates)
         self.width, self.height = self.find_area()
         self.border = self.create_border()
+        self.invisible_lines = self.create_invisible_lines()
+        print(self.invisible_lines)
         self.width, self.height = 0, 0
         
     def create_map_coordinates(self, line_lengths, directions):
@@ -53,6 +56,17 @@ class Map:
         self.border_coordinates = Polygon([(-2,-2),(self.width,-2), (self.width, self.height), (-2, self.height)])
         self.border_coordinates = self.border_coordinates.symmetric_difference(self.map)
         return self.border_coordinates
+    
+    def create_invisible_lines(self):
+        invisible_lines = []
+        additional_length = 100
+        for i in range(len(self.map_coordinates)-1):
+            if self.map_coordinates[i][0] == self.map_coordinates[i+1][0]:
+                invisible_lines.append(LineString([(self.map_coordinates[i][0], self.map_coordinates[i][1]+additional_length), (self.map_coordinates[i+1][0], self.map_coordinates[i+1][1]-additional_length)]))
+            else:
+                invisible_lines.append(LineString([(self.map_coordinates[i][0]+additional_length, self.map_coordinates[i][1]), (self.map_coordinates[i+1][0]-additional_length, self.map_coordinates[i+1][1])]))
+        print(invisible_lines)
+        return invisible_lines
 
     def shift_graph(self, coordinates, length):
         """
