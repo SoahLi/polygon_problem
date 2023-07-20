@@ -2,22 +2,23 @@ from shapely.geometry import Polygon, LineString
 import geopandas as gpd
 
 class Map:
-    def __init__(self, directions, line_lengths):
+    def __init__(self, directions: list[str], line_lengths: list[str]):
         if not line_lengths and not directions:
             return
         if len(line_lengths) != len(directions):
             IndexExror: print("amount of lines and their dircetions do not match")
             return
-        #self.map = self.create_map_coordinates()
-        self.map_coordinates = self.create_map_coordinates(line_lengths, directions)
-        self.map = Polygon(self.map_coordinates)
+        #self.map = self.create_coordinates()
+        self.coordinates = self.create_coordinates(line_lengths, directions)
+        self.map = Polygon(self.coordinates)
         self.width, self.height = self.find_area()
         self.border = self.create_border()
         self.invisible_lines = self.create_invisible_lines()
         print(self.invisible_lines)
         self.width, self.height = 0, 0
+        self.try_point = (0,0)
         
-    def create_map_coordinates(self, line_lengths, directions):
+    def create_coordinates(self, line_lengths, directions):
         num_lines = len(line_lengths)
         x_coordinates = [0]
         y_coordinates = [0]
@@ -60,11 +61,11 @@ class Map:
     def create_invisible_lines(self):
         invisible_lines = []
         additional_length = 100
-        for i in range(len(self.map_coordinates)-1):
-            if self.map_coordinates[i][0] == self.map_coordinates[i+1][0]:
-                invisible_lines.append(LineString([(self.map_coordinates[i][0], self.map_coordinates[i][1]+additional_length), (self.map_coordinates[i+1][0], self.map_coordinates[i+1][1]-additional_length)]))
+        for i in range(len(self.coordinates)-1):
+            if self.coordinates[i][0] == self.coordinates[i+1][0]:
+                invisible_lines.append(LineString([(self.coordinates[i][0], self.coordinates[i][1]+additional_length), (self.coordinates[i+1][0], self.coordinates[i+1][1]-additional_length)]))
             else:
-                invisible_lines.append(LineString([(self.map_coordinates[i][0]+additional_length, self.map_coordinates[i][1]), (self.map_coordinates[i+1][0]-additional_length, self.map_coordinates[i+1][1])]))
+                invisible_lines.append(LineString([(self.coordinates[i][0]+additional_length, self.coordinates[i][1]), (self.coordinates[i+1][0]-additional_length, self.coordinates[i+1][1])]))
         print(invisible_lines)
         return invisible_lines
 
