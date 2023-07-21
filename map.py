@@ -1,15 +1,11 @@
+from typing import Optional
 from shapely.geometry import Polygon, LineString
 import geopandas as gpd
 
 class Map:
-    def __init__(self, directions: list[str], line_lengths: list[str]):
-        if not line_lengths and not directions:
-            return
-        if len(line_lengths) != len(directions):
-            IndexExror: print("amount of lines and their dircetions do not match")
-            return
+    def __init__(self, coordinates):
         #self.map = self.create_coordinates()
-        self.coordinates = self.create_coordinates(line_lengths, directions)
+        self.coordinates = coordinates
         self.map = Polygon(self.coordinates)
         self.width, self.height = self.find_area()
         self.border = self.create_border()
@@ -18,38 +14,8 @@ class Map:
         self.width, self.height = 0, 0
         self.try_point = (0,0)
         
-    def create_coordinates(self, line_lengths, directions):
-        num_lines = len(line_lengths)
-        x_coordinates = [0]
-        y_coordinates = [0]
-        cardinal_directions = {
-        "n": ["", "+"],
-        "e": ["+", ""],
-        "s": ["", "-"],
-        "w": ["-", ""],
-        }
-        for i in range(num_lines):
-            if directions[i] == "n":
-                x_coordinates.append(x_coordinates[-1] + 0)
-                y_coordinates.append(y_coordinates[-1] + line_lengths[i])
-            elif directions[i] == "e":
-                x_coordinates.append(x_coordinates[-1] + line_lengths[i])
-                y_coordinates.append(y_coordinates[-1] + 0)                 
-            elif directions[i] == "s":
-                x_coordinates.append(x_coordinates[-1] + 0)
-                y_coordinates.append(y_coordinates[-1] - line_lengths[i])
-                if y_coordinates[-1] < 0:
-                    y_coordinates = self.shift_graph(y_coordinates, -y_coordinates[-1])
-            elif directions[i] == "w":
-                x_coordinates.append(x_coordinates[-1] - line_lengths[i])
-                y_coordinates.append(y_coordinates[-1] + 0)
-                if x_coordinates[-1] < 0:
-                    x_coordinates = self.shift_graph(x_coordinates, -x_coordinates[-1])
-        #x_coordinates, y_coordinates = shift_graph(x_coordinates, 2), shift_graph(y_coordinates, 2)
-        
-        return [(x, y) for x, y in zip(x_coordinates, y_coordinates)]
-    
-    
+    #want method to look like this
+    #create_border(self, width: int = self.width, height: int =self.height, map: Polygon = self.map)
     def create_border(self):
         """
         Creates border for Map Object
@@ -91,7 +57,8 @@ class Map:
             if current_y > largest_y:
                 largest_y = current_y
         return largest_x+2, largest_y+2
-
+    def eat_map(self, chunk_to_eat):
+        return self.map.difference(chunk_to_eat)
 
 
 

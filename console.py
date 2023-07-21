@@ -7,11 +7,12 @@ from shapely.geometry import Polygon
 from Graph import Graph
 import csv
 
-my_map = Map(['e','n','e','n','w','s'], [8,3,4,7,12,10])
-my_graph = Graph(my_map, [Piece(2,6),Piece(6,3),Piece(10,2),Piece(5,6),Piece(5,6)])
+
+my_graph = Graph([Piece(2,6),Piece(6,3),Piece(10,2),Piece(5,6),Piece(5,6)])
+my_graph.map_creator(['e','n','e','n','w','s'], [8,3,4,7,12,10])
 my_graph.plot_map()
 my_graph.fill_perimater()
-my_graph.display_graph(animate=True)
+my_graph.display_graph()
 
 
 
