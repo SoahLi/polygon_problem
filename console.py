@@ -11,9 +11,10 @@ import csv
 my_graph = Graph([Piece(2,6),Piece(6,3),Piece(10,2),Piece(5,6),Piece(5,6)])
 my_graph.map_creator(['e','n','e','n','w','s'], [8,3,4,7,12,10])
 my_graph.plot_map()
-my_graph.fill_perimater()
+first_set = my_graph.fill_perimater()
+for graph in first_set:
+    graph.plot_map()
 my_graph.display_graph()
-
 
 
 
