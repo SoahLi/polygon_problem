@@ -1,4 +1,4 @@
-from Map import Map
+from map import Map
 from Piece import Piece
 import itertools
 from matplotlib.animation import FuncAnimation
@@ -101,11 +101,14 @@ class Graph:
             return coordinates[highest_coord_idx]
 
         def adjust_pieces_to_try_point(pieces, distance: list[int]):
+            print(pieces is new_pieces)
+            print(pieces == new_pieces)
             for piece in pieces:
-                for orientation in piece.orientations:
+                for orientation in piece.orientations:                 
                     for coordinate in orientation.coordinates:
-                        coordinate[0], coordinate[1] = coordinate[0] + distance[0], coordinate[1] + distance[1]
-            return pieces
+                        coordinate[0] = coordinate[0] + distance[0]
+                        coordinate[1] = coordinate[1] + distance[1]
+
             
 
         #method instuction start
@@ -123,14 +126,29 @@ class Graph:
                         for coordinate in orientation.coordinates:
                             if on_line(self.map.coordinates[i], self.map.coordinates[i+1], coordinate):
                                 coordinates_on_perimater.append(coordinate)
-  
                     new_try_point = find_highest_coord(coordinates_on_perimater)
                     distance_between_try_points = [new_try_point[0]-self.try_point[0], new_try_point[1]-self.try_point[1]]
                     new_map = self.map.eat_map(shapely_orientation)
+                    """
+                    if isinstance(new_map, MultiPolygon):
+                        print("map geoms")
+                        print(new_map)
+                        print("the geoms")
+                        for geom in new_map.geoms:
+                            print(tuple(geom.exterior.coords))
+                        new_fig, new_ax = plt.subplots()
+                        gpd.GeoSeries(shapely_orientation).plot(ax=new_ax, color='purple')
+                        for polygon in new_map.geoms:
+                            gpd.GeoSeries(polygon).plot(ax=new_ax)
+                        plt.show()
+                    """
                     new_map = Map(tuple(new_map.exterior.coords))
                     new_pieces = copy.deepcopy(self.pieces)
-                    new_pieces.pop(index)
-                    new_pieces = adjust_pieces_to_try_point(new_pieces, distance_between_try_points)
+                    #new_pieces.pop(index)
+                    print("before")
+                    print(new_pieces[0].orientations[0].coordinates)
+                    adjust_pieces_to_try_point(new_pieces, distance_between_try_points)
+                    print(new_pieces[0].orientations[0].coordinates)
                     new_graph = Graph(new_pieces, new_map, new_try_point)
                     new_graphs.append(new_graph)
 
@@ -166,11 +184,8 @@ class Graph:
                     coordinate[1] += displacement[1]
 
     def animate(self, interval: int = 100):
-
         def update(obj):
-            if len(self.ax.collections) > self.total_pieces_placed:
-                self.ax.collections[self.total_pieces_placed-self.current_piece_index].remove()
-            obj.plot(ax=self.ax, color='red')
+            print(obj)
         ani = FuncAnimation(self.fig, update, frames=list(itertools.chain.from_iterable([obj.get_orientations() for obj in self.pieces])), interval=interval)
 
 #        def update(obj):
