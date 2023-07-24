@@ -99,7 +99,8 @@ class Graph:
                 if coordinates[i][1] > coordinates[highest_coord_idx][1]:
                     highest_coord_idx = i
             return coordinates[highest_coord_idx]
-
+        #MY VERSION OF ADJUST_PIECES_TO_TRY_POINT
+        """
         def adjust_pieces_to_try_point(pieces, distance: list[int]):
             print('before')
             print(pieces[0].orientations[0].coordinates)
@@ -111,7 +112,20 @@ class Graph:
                         coordinate[1] = coordinate[1] + distance[1]
             print('after')
             print(pieces[0].orientations[0].coordinates)
-            
+                
+        """
+        #CHAT
+        def adjust_pieces_to_try_point(pieces, distance):
+            print('before')
+            print(pieces[0].orientations[0].coordinates)
+
+            for piece in pieces:
+                for orientation in piece.orientations:                 
+                    orientation.coordinates = [[coord[0] + distance[0], coord[1] + distance[1]] for coord in orientation.coordinates]
+
+            print('after')
+            print(pieces[0].orientations[0].coordinates)  
+            return pieces  
 
         #method instuction start
         new_graphs = []
@@ -131,7 +145,7 @@ class Graph:
                     new_try_point = find_highest_coord(coordinates_on_perimater)
                     distance_between_try_points = [new_try_point[0]-self.try_point[0], new_try_point[1]-self.try_point[1]]
                     new_map = self.map.eat_map(shapely_orientation)
-                    """
+
                     if isinstance(new_map, MultiPolygon):
                         print("map geoms")
                         print(new_map)
@@ -142,11 +156,12 @@ class Graph:
                         gpd.GeoSeries(shapely_orientation).plot(ax=new_ax, color='purple')
                         for polygon in new_map.geoms:
                             gpd.GeoSeries(polygon).plot(ax=new_ax)
-                        plt.show()
-                    """
+                        self.ax.collections[-1].remove()
+                        continue
+                        
                     new_map = Map(tuple(new_map.exterior.coords))
                     new_pieces = copy.deepcopy(self.pieces)
-                    #new_pieces.pop(index)
+                    new_pieces.pop(index)
                     new_pieces = adjust_pieces_to_try_point(new_pieces, distance_between_try_points)
                     new_graph = Graph(new_pieces, new_map, new_try_point)
                     new_graphs.append(new_graph)
