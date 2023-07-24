@@ -101,14 +101,16 @@ class Graph:
             return coordinates[highest_coord_idx]
 
         def adjust_pieces_to_try_point(pieces, distance: list[int]):
-            print(pieces is new_pieces)
-            print(pieces == new_pieces)
+            print('before')
+            print(pieces[0].orientations[0].coordinates)
+
             for piece in pieces:
                 for orientation in piece.orientations:                 
                     for coordinate in orientation.coordinates:
                         coordinate[0] = coordinate[0] + distance[0]
                         coordinate[1] = coordinate[1] + distance[1]
-
+            print('after')
+            print(pieces[0].orientations[0].coordinates)
             
 
         #method instuction start
@@ -145,10 +147,7 @@ class Graph:
                     new_map = Map(tuple(new_map.exterior.coords))
                     new_pieces = copy.deepcopy(self.pieces)
                     #new_pieces.pop(index)
-                    print("before")
-                    print(new_pieces[0].orientations[0].coordinates)
-                    adjust_pieces_to_try_point(new_pieces, distance_between_try_points)
-                    print(new_pieces[0].orientations[0].coordinates)
+                    new_pieces = adjust_pieces_to_try_point(new_pieces, distance_between_try_points)
                     new_graph = Graph(new_pieces, new_map, new_try_point)
                     new_graphs.append(new_graph)
 
