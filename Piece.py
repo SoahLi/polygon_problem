@@ -1,7 +1,9 @@
 from shapely.geometry import Polygon
 import geopandas as gpd
+from random import randint
 
 class Piece:
+    colors = ['orange', 'yellow', 'pink', 'green', "magenta", 'cyan']
     def __init__(self, width, height):
         """
         Args:
@@ -10,6 +12,7 @@ class Piece:
         """
         self.width = width
         self.height = height
+        self.color = Piece.colors[randint(0, len(Piece.colors)-1)]
         self.area = width*height
         self.default_orientation = [[0,0],[width,0],[width,height],[0,height]]  #left, right, up,left
         self.orientations = self.get_all_orientations(self.default_orientation)
@@ -37,13 +40,13 @@ class Piece:
         orientations.append(flip_down(orientations[5]))
         orientations.append(flip_right(orientations[6]))
         for i in range(len(orientations)):
-            orientations[i] = self.Oritentation(orientations[i])
+            orientations[i] = self.Orientation(orientations[i], self.color)
         return orientations
     
-    class Oritentation:
-        def __init__(self,coordinates):
-            self.score = None
+    class Orientation:
+        def __init__(self,coordinates, color):
             self.coordinates= coordinates
+            self.color = color
         def set_score(self, score):
             self.score = score
 
