@@ -1,5 +1,5 @@
 from map import Map
-from Piece import Piece
+from piece import Piece
 import itertools
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
@@ -10,16 +10,25 @@ import csv
 import time
 
 class Graph:
-    def __init__(self, pieces: list = None, map: Map = None, try_point: tuple = (0,0)):
+    def __init__(self, pieces: list = None, map: Map = None, pieces_placed: list[Piece] = [], try_point: tuple = (0,0)):
         self.fig, self.ax = plt.subplots()
-        self.ax.set_xticks([0,5,10,15])
-        self.ax.set_yticks([0,5,10,15])
+        self.x_values = [0, 5, 10, 15]
+        self.y_values = [0, 5, 10, 15]
+        self.ax.set_xticks(self.x_values)
+        self.ax.set_yticks(self.y_values)
+        for x_tick in self.x_values:
+            self.ax.axvline(x=x_tick, color='gray', linestyle='-', alpha=0.5)
+        for y_tick in self.y_values:
+            self.ax.axhline(y=y_tick, color='gray', linestyle='-', alpha=0.5)
         self.map = map
         self.border = None
-        self.total_pices_placed = None
+        self.pieces_placed = pieces_placed
         if self.map: 
             self.border = self.map.border
             self.total_pieces_placed = 2 + len(self.map.invisible_lines)
+            self.plot_map()
+            for piece in pieces_placed:
+                self.place_piece(piece, self, piece.color)
         self.pieces = pieces
         self.animation = None
         self.current_piece_index = 0
@@ -113,18 +122,12 @@ class Graph:
             print('after')
             print(pieces[0].orientations[0].coordinates)
                 
-        """
+        """                 
         #CHAT
         def adjust_pieces_to_try_point(pieces, distance):
-            print('before')
-            print(pieces[0].orientations[0].coordinates)
-
             for piece in pieces:
                 for orientation in piece.orientations:                 
-                    orientation.coordinates = [[coord[0] + distance[0], coord[1] + distance[1]] for coord in orientation.coordinates]
-
-            print('after')
-            print(pieces[0].orientations[0].coordinates)  
+                    orientation.coordinates = [[coord[0] + distance[0], coord[1] + distance[1]] for coord in orientation.coordinates]  
             return pieces  
 
         #method instuction start
@@ -142,6 +145,8 @@ class Graph:
                         for coordinate in orientation.coordinates:
                             if on_line(self.map.coordinates[i], self.map.coordinates[i+1], coordinate):
                                 coordinates_on_perimater.append(coordinate)
+                    if not coordinates_on_perimater:
+                        continue
                     new_try_point = find_highest_coord(coordinates_on_perimater)
                     distance_between_try_points = [new_try_point[0]-self.try_point[0], new_try_point[1]-self.try_point[1]]
                     new_map = self.map.eat_map(shapely_orientation)
@@ -163,7 +168,7 @@ class Graph:
                     new_pieces = copy.deepcopy(self.pieces)
                     new_pieces.pop(index)
                     new_pieces = adjust_pieces_to_try_point(new_pieces, distance_between_try_points)
-                    new_graph = Graph(new_pieces, new_map, new_try_point)
+                    new_graph = Graph(new_pieces, new_map, self.pieces_placed+[orientation], new_try_point)
                     new_graphs.append(new_graph)
 
 
@@ -172,17 +177,19 @@ class Graph:
                 else:
                     self.ax.collections[-1].remove()
 
-
+        if not new_graphs:return None
         return new_graphs
             
 
 
     def plot_map(self):
+        """
         for line in self.map.invisible_lines:
             gpd.GeoSeries(line).plot(ax=self.ax, color='purple')
+        """
         gpd.GeoSeries(self.map.shapely_map).plot(ax = self.ax, color='blue')
         self.border = gpd.GeoSeries(self.map.border)
-        self.border.plot(ax = self.ax, color='red')
+        self.border.plot(ax = self.ax, color='white')
 
     
     def display_graph(self, animate: bool = False):
@@ -196,6 +203,9 @@ class Graph:
                 for coordinate in orientation.coordinates:
                     coordinate[0] += displacement[0]
                     coordinate[1] += displacement[1]
+    def place_piece(self, piece, graph, color):
+        gpd.GeoSeries(Polygon(piece.coordinates)).plot(ax=graph.ax, color = color )
+
 
     def animate(self, interval: int = 100):
         def update(obj):
