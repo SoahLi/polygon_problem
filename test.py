@@ -1,29 +1,16 @@
-from Map import Map
-from Piece import Piece
+from map import Map
+from piece import Piece
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
 from shapely.geometry import Polygon, MultiPolygon
-from Graph import Graph
+from graph import Graph
 import csv
-polygon1 = Polygon([(0, 0), (0, 3), (3, 3), (3, 0)])
-polygon2 = Polygon([(2, 2), (2, 5), (5, 5), (5, 2)])
+from tree import TreeNode
+root = TreeNode(1)
+root.add_children([2,3,4,5,6])
+print(root.count_nodes())
 
-# Calculate the difference between the polygons
-resulting_geometry = polygon2.difference(polygon1)
-
-# Check the type of the resulting geometry
-if isinstance(resulting_geometry, Polygon):
-    print("Result is a single Polygon.")
-elif isinstance(resulting_geometry, MultiPolygon):
-    print("Result is a MultiPolygon with multiple disjointed polygons.")
-else:
-    print("Result is of another type.")
-
-# Print the individual polygons in the MultiPolygon (if applicable)
-if isinstance(resulting_geometry, MultiPolygon):
-    for poly in resulting_geometry:
-        print(poly)
     
 
 

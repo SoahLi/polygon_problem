@@ -1,19 +1,56 @@
 from map import Map
-from Piece import Piece
+from piece import Piece
+from tree import TreeNode
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
 from shapely.geometry import Polygon
 from graph import Graph
 import csv
-
-
-my_graph = Graph([Piece(2,6),Piece(6,3),Piece(10,2),Piece(5,6),Piece(5,6)])
+correct_node = None
+correct_node_idx = 2
+my_graph = Graph([Piece(2,5),Piece(6,3),Piece(10,2),Piece(5,6),Piece(5,6)])
+for piece in my_graph.pieces:
+    print("piece with width " + str(piece.width) + " and height " + str(piece.height) + " is color " + piece.color)
+root = TreeNode(my_graph)
 my_graph.map_creator(['e','n','e','n','w','s'], [8,3,4,7,12,10])
 my_graph.plot_map()
-first_set = my_graph.fill_perimater()
-for graph in first_set:
-    graph.plot_map()
+root.add_children(root.data.fill_perimater())
+for i in range(1):
+    for leaf in root.get_leaves():
+
+        leaf.add_children(leaf.data.fill_perimater())
+if root.count_nodes() >= correct_node_idx:
+    correct_node = root.get_node_at_index(correct_node_idx)
+            
+
+#!!!!!!
+#current_work
+"""
+for node in correct_node.children:
+    print("hi")
+    print(node.index)
+print(root.__repr__())
+
+print(root.count_nodes())
+print()
+print(plt.get_fignums())
+for i in range(1,correct_node_idx):
+    plt.close(i)
+print()
+print(plt.get_fignums())
+for i in range(15, root.count_nodes()+4):
+    plt.close(i)
+print()
+"""
+print(correct_node.data)
+my_nodes = root.nodes_in_order()
+print(root.nodes_in_order()[correct_node_idx])
+for i in range(1, root.count_nodes()+1):
+    print(i)
+    print(my_nodes[i-1])
+    print()
+print("finished")
 my_graph.display_graph()
 
 

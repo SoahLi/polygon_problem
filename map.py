@@ -5,6 +5,7 @@ import copy
 
 class Map:
     def __init__(self, coordinates):
+        self.border_length = 10
         #self.shapely_map = self.create_coordinates()
         self.coordinates = coordinates
         self.shapely_map = Polygon(self.coordinates)
@@ -12,6 +13,7 @@ class Map:
         self.border = self.create_border()
         self.invisible_lines = self.create_invisible_lines()
         self.width, self.height = 0, 0
+
         
     #want method to look like this
     #create_border(self, width: int = self.width, height: int =self.height, map: Polygon = self.shapely_map)
@@ -19,7 +21,7 @@ class Map:
         """
         Creates border for Map Object
         """
-        self.border_coordinates = Polygon([(-2,-2),(self.width,-2), (self.width, self.height), (-2, self.height)])
+        self.border_coordinates = Polygon([(-self.border_length,-self.border_length),(self.width,-self.border_length), (self.width, self.height), (-self.border_length, self.height)])
         self.border_coordinates = self.border_coordinates.symmetric_difference(self.shapely_map)
         return self.border_coordinates
     
@@ -54,7 +56,7 @@ class Map:
                 largest_x = current_x
             if current_y > largest_y:
                 largest_y = current_y
-        return largest_x+2, largest_y+2
+        return largest_x+self.border_length, largest_y+self.border_length
     def eat_map(self, chunk_to_eat):
         new_map = copy.deepcopy(self.shapely_map)
         return new_map.difference(chunk_to_eat)
@@ -72,8 +74,8 @@ class Map:
 
 
     self.fig, self.ax = plt.subplots()
-    self.ax.set_xticks([0,5,10,15])
-    self.ax.set_yticks([0,5,10,15])
+    self.ax.set_xticks([0,5,self.border_length,15])
+    self.ax.set_yticks([0,5,self.border_length,15])
 
     def plot_map(self):
         res = pd.concat([polygon for polygon in self.polygons])
