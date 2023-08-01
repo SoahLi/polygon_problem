@@ -33,10 +33,20 @@ class Graph:
         self.animation = None
         self.current_piece_index = 0
         self.try_point = try_point
+        self.is_complete = False
         #self.displace_pieces(piece_displacement)
     """
     SETS PIECES OUTSIDE OF MAP
     """
+
+    def __str__(self):
+        pieces_str = "\n".join([f"Piece {i+1}: {piece.default_orientation}" for i, piece in enumerate(self.pieces)])
+        pieces_placed_str = "\n".join([f"Piece {i+1}: {piece.coordinates}" for i, piece in enumerate(self.pieces_placed)])
+        return f"Graph:\n" \
+               f"Map: {self.map}\n" \
+               f"Pieces: \n{pieces_str}\n" \
+               f"Pieces Placed: \n{pieces_placed_str}\n" \
+               f"Try Point: {self.try_point}\n"
 
     def map_creator(self, directions: list[str], line_lengths: list[str]):
         if not line_lengths and not directions:
@@ -100,7 +110,12 @@ class Graph:
                 return True
 
             return False
-
+        def doesent_touch_placed_pieces(current_coordinate):
+            for piece in self.pieces_placed:
+                for coordinate in piece.coordinates:
+                    if coordinate == current_coordinate:
+                        return False
+            return True
         def find_highest_coord(coordinates):
             if not coordinates: return None
             highest_coord_idx = 0
@@ -143,10 +158,8 @@ class Graph:
                     coordinates_on_perimater = []
                     for i in range(len(self.map.coordinates)-1):
                         for coordinate in orientation.coordinates:
-                            if on_line(self.map.coordinates[i], self.map.coordinates[i+1], coordinate):
+                            if on_line(self.map.coordinates[i], self.map.coordinates[i+1], coordinate) and doesent_touch_placed_pieces(coordinate):
                                 coordinates_on_perimater.append(coordinate)
-                    if not coordinates_on_perimater:
-                        continue
                     new_try_point = find_highest_coord(coordinates_on_perimater)
                     distance_between_try_points = [new_try_point[0]-self.try_point[0], new_try_point[1]-self.try_point[1]]
                     new_map = self.map.eat_map(shapely_orientation)
@@ -157,11 +170,13 @@ class Graph:
                         print("the geoms")
                         for geom in new_map.geoms:
                             print(tuple(geom.exterior.coords))
+                        """
                         new_fig, new_ax = plt.subplots()
                         gpd.GeoSeries(shapely_orientation).plot(ax=new_ax, color='purple')
                         for polygon in new_map.geoms:
                             gpd.GeoSeries(polygon).plot(ax=new_ax)
                         self.ax.collections[-1].remove()
+                        """
                         continue
                         
                     new_map = Map(tuple(new_map.exterior.coords))
@@ -189,7 +204,7 @@ class Graph:
         """
         gpd.GeoSeries(self.map.shapely_map).plot(ax = self.ax, color='blue')
         self.border = gpd.GeoSeries(self.map.border)
-        self.border.plot(ax = self.ax, color='white')
+        self.border.plot(ax = self.ax, color='red')
 
     
     def display_graph(self, animate: bool = False):
