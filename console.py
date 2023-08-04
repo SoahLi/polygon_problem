@@ -7,25 +7,54 @@ import geopandas as gpd
 from shapely.geometry import Polygon
 from graph import Graph
 import csv
+import json
+"""
 correct_node = None
-correct_node_idx = 2
-my_graph = Graph([Piece(2,5),Piece(6,3),Piece(10,2),Piece(5,6),Piece(5,6)])
+correct_node_idx = 62
+my_pieces = []
+with open("pieces.csv", 'r') as file:
+    csvreader = csv.reader(file)
+    header = next(csvreader)
+    for row in csvreader:
+        my_pieces.append(Piece(int(row[0]), int(row[1])))
+my_graph = Graph(my_pieces)
 for piece in my_graph.pieces:
     print("piece with width " + str(piece.width) + " and height " + str(piece.height) + " is color " + piece.color)
 root = TreeNode(my_graph)
 my_graph.map_creator(['e','n','e','n','w','s'], [8,3,4,7,12,10])
 my_graph.plot_map()
 root.add_children(root.data.fill_perimater())
-for i in range(1):
+for i in range(4):
     for leaf in root.get_leaves():
-
         leaf.add_children(leaf.data.fill_perimater())
 if root.count_nodes() >= correct_node_idx:
     correct_node = root.get_node_at_index(correct_node_idx)
-            
+tree_dict = root.tree_to_dict(root)
+with open("tree_data.json", "w") as file:
+    json.dump(tree_dict, file)
+print(root.grab_data_at_index(5))
+"""
 
-#!!!!!!
-#current_work
+
+
+def get_data_at_index(target_index):
+    with open("tree_data.json", "r") as file:
+        content = file.read()
+        data_dict = json.loads(content)
+    
+    def dfs(node):
+        if int(node['index']) == target_index:
+            return node['data']
+        for child in node['children']:
+            result = dfs(child)
+            if result:
+                return result
+        return None
+
+    return dfs(data_dict)
+    
+
+
 """
 for node in correct_node.children:
     print("hi")
@@ -43,15 +72,31 @@ for i in range(15, root.count_nodes()+4):
     plt.close(i)
 print()
 """
+"""
+print("the supposed correct node\n\n\n")
 print(correct_node.data)
 my_nodes = root.nodes_in_order()
-print(root.nodes_in_order()[correct_node_idx])
-for i in range(1, root.count_nodes()+1):
+for i in range(1, root.count_nodes()+1-90):
     print(i)
     print(my_nodes[i-1])
     print()
+
 print("finished")
+"""
+"""
+tree_dict = root.tree_to_dict(root)
+with open("tree_data.json", "w") as file:
+    json.dump(tree_dict, file)
+"""
+
+d = get_data_at_index(62)
+my_graph = Graph([Piece(x,y) for x,y in d['pieces_len_height']], Map(d['map_coordinates']), [Piece.Orientation(coord, "pink") for coord in d['pieces_placed_coordinates']], d['try_point'])
+print(my_graph.pieces[0].color)
 my_graph.display_graph()
+"""
+"""
+
+
 
 
 
