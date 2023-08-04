@@ -1,3 +1,6 @@
+import json
+import jsbeautifier
+
 class TreeNode:
     total_nodes = 0
     def __init__(self, data):
@@ -65,20 +68,16 @@ class TreeNode:
                 count += child.count_leaves()
             return count
         
-    def get_node_at_index(self, target_graph_number):
-        def dfs(node, current_index):
-            if current_index == target_graph_number:
+    def get_node_at_index(self, target_index):
+        def dfs(node):
+            if node.index == target_index:
                 return node
-
             for child in node.children:
-                current_index += 1
-                result = dfs(child, current_index)
+                result = dfs(child)
                 if result:
                     return result
-
             return None
-
-        return dfs(self, 1)
+        return dfs(self)
 
 
     def nodes_in_order(self):
@@ -94,9 +93,47 @@ class TreeNode:
                 queue.append(child)
 
         return nodes_data
+    
 
+    def tree_to_dict(self, node):
+        data = {
+            "index": str(node.index),
+            "data": {
+                "pieces_len_height": [[piece.width, piece.height] for piece in node.data.pieces],
+                "map_coordinates": node.data.map.coordinates[:-1],
+                "pieces_placed_coordinates": [orientation.coordinates for orientation in node.data.pieces_placed],
+                "try_point": node.data.try_point,
+            },
+            "children": [],
+        }
 
+        for child_node in node.children:
+            child_json = self.tree_to_dict(child_node)
+            data["children"].append(child_json)
+            
+        return data
+    
+    def print_data(self, data):
+        opts = jsbeautifier.default_options()
+        opts.indent_size = 2
+        formated = jsbeautifier.beautify(json.dumps(data), opts)
+        print(formated)
 
+    def grab_data_at_index(self, target_index):
+        with open("tree_data.json", "r") as file:
+            content = file.read()
+            data_dict = json.loads(content)
+        
+        def dfs(node):
+            if int(node['index']) == target_index:
+                return node['data']
+            for child in node['children']:
+                result = dfs(child)
+                if result:
+                    return result
+            return None
+
+        return dfs(data_dict)
 
 
 

@@ -7,9 +7,26 @@ from shapely.geometry import Polygon, MultiPolygon
 from graph import Graph
 import csv
 from tree import TreeNode
+import json
+import ctypes
+"""
 root = TreeNode(1)
-root.add_children([2,3,4,5,6])
-print(root.count_nodes())
+root.add_children([10,22,45,33])
+print(root.__repr__())
+print(root.get_node_at_index(1))
+"""
+d = {'index': '1', 'data': {'pieces': [[2, 5], [6, 3], [10, 2], [5, 6], [5, 6]], 'map': [(0, 0), (8, 0), (8, 3), (12, 3), (12, 10), (0, 10)], 'pieces_placed': [], 'try_point': (0, 0)}, 'children': [{'index': '2', 'data': {'pieces': [[6, 3], [10, 2], [5, 6], [5, 6]], 'map': ((0.0, 10.0), (12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (2.0, 0.0), (2.0, 5.0), (0.0, 5.0)), 'pieces_placed': [[[0, 0], [2, 0], [2, 5], [0, 5]]], 'try_point': [0, 5]}, 'children': []}, {'index': '3', 'data': {'pieces': [[6, 3], [10, 2], [5, 6], [5, 6]], 'map': ((0.0, 10.0), (12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (5.0, 0.0), (5.0, 2.0), (0.0, 2.0)), 'pieces_placed': [([0, 0], [5, 0], [5, 2], [0, 2])], 'try_point': [0, 2]}, 'children': []}, {'index': '4', 'data': {'pieces': [[2, 5], [10, 2], [5, 6], [5, 6]], 'map': ((0.0, 10.0), (12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (6.0, 0.0), (6.0, 3.0), (0.0, 3.0)), 'pieces_placed': [[[0, 0], [6, 0], [6, 3], [0, 3]]], 'try_point': [0, 3]}, 'children': []}, {'index': '5', 'data': {'pieces': [[2, 5], [10, 2], [5, 6], [5, 6]], 'map': ((0.0, 10.0), (12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (3.0, 0.0), (3.0, 6.0), (0.0, 6.0)), 'pieces_placed': [([0, 0], [3, 0], [3, 6], [0, 6])], 'try_point': [0, 6]}, 'children': []}, {'index': '6', 'data': {'pieces': [[2, 5], [6, 3], [5, 6], [5, 6]], 'map': ((12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (2.0, 0.0), (2.0, 10.0)), 'pieces_placed': [([0, 0], [2, 0], [2, 10], [0, 10])], 'try_point': [2, 10]}, 'children': []}, {'index': '7', 'data': {'pieces': [[2, 5], [6, 3], [10, 2], [5, 6]], 'map': ((0.0, 10.0), (12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (5.0, 0.0), (5.0, 6.0), (0.0, 6.0)), 'pieces_placed': [[[0, 0], [5, 0], [5, 6], [0, 6]]], 'try_point': [0, 6]}, 'children': []}, {'index': '8', 'data': {'pieces': [[2, 5], [6, 3], [10, 2], [5, 6]], 'map': ((0.0, 10.0), (12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (6.0, 0.0), (6.0, 5.0), (0.0, 5.0)), 'pieces_placed': [([0, 0], [6, 0], [6, 5], [0, 5])], 'try_point': [0, 5]}, 'children': []}, {'index': '9', 'data': {'pieces': [[2, 5], [6, 3], [10, 2], [5, 6]], 'map': ((0.0, 10.0), (12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (5.0, 0.0), (5.0, 6.0), (0.0, 6.0)), 'pieces_placed': [[[0, 0], [5, 0], [5, 6], [0, 6]]], 'try_point': [0, 6]}, 'children': []}, {'index': '10', 'data': {'pieces': [[2, 5], [6, 3], [10, 2], [5, 6]], 'map': ((0.0, 10.0), (12.0, 10.0), (12.0, 3.0), (8.0, 3.0), (8.0, 0.0), (6.0, 0.0), (6.0, 5.0), (0.0, 5.0)), 'pieces_placed': [([0, 0], [6, 0], [6, 5], [0, 5])], 'try_point': [0, 5]}, 'children': []}]}
+print (json.dumps(d, indent = 2, separators=(',', ': ')))
+import jsbeautifier
+opts = jsbeautifier.default_options()
+opts.indent_size = 2
+formated = jsbeautifier.beautify(json.dumps(d), opts)
+with open("tree_data.json", 'w', encoding="utf8") as file:
+    json.dump(d, file, indent=4)
+    test = file.read()
+print(test)
+
+
 
     
 

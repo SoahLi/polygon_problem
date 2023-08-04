@@ -28,7 +28,7 @@ class Graph:
             self.total_pieces_placed = 2 + len(self.map.invisible_lines)
             self.plot_map()
             for piece in pieces_placed:
-                self.place_piece(piece, self, piece.color)
+                self.place_piece(piece, piece.color)
         self.pieces = pieces
         self.animation = None
         self.current_piece_index = 0
@@ -38,15 +38,17 @@ class Graph:
     """
     SETS PIECES OUTSIDE OF MAP
     """
+    def get_memory_location(self):
+        return hex(id(self))
 
     def __str__(self):
         pieces_str = "\n".join([f"Piece {i+1}: {piece.default_orientation}" for i, piece in enumerate(self.pieces)])
         pieces_placed_str = "\n".join([f"Piece {i+1}: {piece.coordinates}" for i, piece in enumerate(self.pieces_placed)])
         return f"Graph:\n" \
-               f"Map: {self.map}\n" \
-               f"Pieces: \n{pieces_str}\n" \
-               f"Pieces Placed: \n{pieces_placed_str}\n" \
-               f"Try Point: {self.try_point}\n"
+            f"Map: {self.map}\n" \
+            f"Pieces: \n{pieces_str}\n" \
+            f"Pieces Placed: \n{pieces_placed_str}\n" \
+            f"Try Point: {self.try_point}\n"
 
     def map_creator(self, directions: list[str], line_lengths: list[str]):
         if not line_lengths and not directions:
@@ -165,11 +167,13 @@ class Graph:
                     new_map = self.map.eat_map(shapely_orientation)
 
                     if isinstance(new_map, MultiPolygon):
+                        """
                         print("map geoms")
                         print(new_map)
                         print("the geoms")
                         for geom in new_map.geoms:
                             print(tuple(geom.exterior.coords))
+                        """
                         """
                         new_fig, new_ax = plt.subplots()
                         gpd.GeoSeries(shapely_orientation).plot(ax=new_ax, color='purple')
@@ -218,8 +222,8 @@ class Graph:
                 for coordinate in orientation.coordinates:
                     coordinate[0] += displacement[0]
                     coordinate[1] += displacement[1]
-    def place_piece(self, piece, graph, color):
-        gpd.GeoSeries(Polygon(piece.coordinates)).plot(ax=graph.ax, color = color )
+    def place_piece(self, piece, color):
+        gpd.GeoSeries(Polygon(piece.coordinates)).plot(ax=self.ax, color = color )
 
 
     def animate(self, interval: int = 100):
