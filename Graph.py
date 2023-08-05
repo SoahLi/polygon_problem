@@ -4,7 +4,7 @@ import itertools
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon, MultiPolygon, Point
 import copy
 import csv
 import time
@@ -25,11 +25,19 @@ class Graph:
         self.pieces_placed = pieces_placed
         if self.map: 
             self.border = self.map.border
-            self.total_pieces_placed = 2 + len(self.map.invisible_lines)
+            self.total_pieces_placed = 2+len(self.pieces_placed)# + len(self.map.invisible_lines)
             self.plot_map()
-            for piece in pieces_placed:
-                self.place_piece(piece, piece.color)
+        self.GeoSeries_pieces_placed = self.place_pieces(self.pieces_placed)
         self.pieces = pieces
+        if try_point != (0,0) and pieces:
+            def adjust_pieces_to_try_point(pieces, distance):
+                for piece in pieces:
+                    for orientation in piece.orientations:                 
+                        orientation.coordinates = [[coord[0] + distance[0], coord[1] + distance[1]] for coord in orientation.coordinates]  
+                return pieces  
+            old_try_point = self.pieces[0].orientations[0].coordinates[0]
+            distance_between_try_points = [try_point[0]-old_try_point[0], try_point[1]-old_try_point[1]]
+            self.pieces = adjust_pieces_to_try_point(self.pieces, distance_between_try_points)
         self.animation = None
         self.current_piece_index = 0
         self.try_point = try_point
@@ -84,7 +92,6 @@ class Graph:
         if self.map == None: 
             self.map = the_map
         return the_map
-    
 
     def fill_perimater(self):
         """
@@ -118,6 +125,12 @@ class Graph:
                     if coordinate == current_coordinate:
                         return False
             return True
+        def doesent_touch_map_corner(current_coordinate):
+            for coordinate in [[int(x),int(y)] for x,y in tuple(self.map.shapely_map.exterior.coords)]:
+                if current_coordinate == coordinate:
+                    
+                    return False
+            return True
         def find_highest_coord(coordinates):
             if not coordinates: return None
             highest_coord_idx = 0
@@ -125,6 +138,50 @@ class Graph:
                 if coordinates[i][1] > coordinates[highest_coord_idx][1]:
                     highest_coord_idx = i
             return coordinates[highest_coord_idx]
+        def iterate_to_next_point(current_coord, destination_coord):
+            if destination_coord[0] < current_coord[0]:
+                current_coord[0] -= .1
+            elif destination_coord[0] > current_coord[0]:
+                current_coord[0] += .1
+            else:
+                pass
+            if destination_coord[1] < current_coord[1]:
+                current_coord[1] -= .1
+            elif destination_coord[1] > current_coord[1]:
+                current_coord[1] += .1
+            else:
+                pass
+            return list(map(lambda x: round(x, 1), current_coord))
+        def find_next_coord():
+            map_coords = [list(coord) for coord in self.map.shapely_map.exterior.coords[::-1]]
+            current_coord = [map_coords[0][0], map_coords[0][1]]
+            for i in range(1, len(map_coords)-1):
+                while current_coord != map_coords[i]:
+                    if current_coord == map_coords[i]:
+                        break
+                    does_touch_piece = False
+                    current_GeoSeries_coord = gpd.GeoSeries(Point(current_coord))
+                    current_GeoSeries_coord.plot(ax = self.ax, color = 'orange')
+                    for piece in self.GeoSeries_pieces_placed:
+                        if piece.touches(current_GeoSeries_coord).bool():
+                            does_touch_piece = True
+                    if does_touch_piece:
+                        current_coord = iterate_to_next_point(current_coord, map_coords[i])
+                        self.ax.collections[-1].remove()
+                        continue
+                    else:
+                        self.ax.collections[-1].remove()
+                        return list(map(int, current_coord))
+
+
+
+                    
+            
+            self.ax.collections[-1].remove()
+            current_coord = [int(elem) for elem in current_coord]
+            return current_coord
+
+                    
         #MY VERSION OF ADJUST_PIECES_TO_TRY_POINT
         """
         def adjust_pieces_to_try_point(pieces, distance: list[int]):
@@ -141,11 +198,6 @@ class Graph:
                 
         """                 
         #CHAT
-        def adjust_pieces_to_try_point(pieces, distance):
-            for piece in pieces:
-                for orientation in piece.orientations:                 
-                    orientation.coordinates = [[coord[0] + distance[0], coord[1] + distance[1]] for coord in orientation.coordinates]  
-            return pieces  
 
         #method instuction start
         new_graphs = []
@@ -154,18 +206,21 @@ class Graph:
                 shapely_orientation = Polygon(orientation.coordinates)
                 current_orientation = gpd.GeoSeries(shapely_orientation)
                 current_orientation.plot(ax=self.ax)
-
+                self.GeoSeries_pieces_placed.append(current_orientation)
                 # UNKOWN WHY THE IF STATEMENT BELOW WORKS
                 if current_orientation.touches(self.border, align=True).bool():
+                    """
                     coordinates_on_perimater = []
                     for i in range(len(self.map.coordinates)-1):
                         for coordinate in orientation.coordinates:
-                            if on_line(self.map.coordinates[i], self.map.coordinates[i+1], coordinate) and doesent_touch_placed_pieces(coordinate):
+                            if on_line(self.map.coordinates[i], self.map.coordinates[i+1], coordinate) and doesent_touch_placed_pieces(coordinate) and doesent_touch_map_corner(coordinate):
                                 coordinates_on_perimater.append(coordinate)
+                    print(coordinates_on_perimater)
                     new_try_point = find_highest_coord(coordinates_on_perimater)
-                    distance_between_try_points = [new_try_point[0]-self.try_point[0], new_try_point[1]-self.try_point[1]]
-                    new_map = self.map.eat_map(shapely_orientation)
+                    """
+                    new_try_point = find_next_coord()
 
+                    new_map = self.map.eat_map(shapely_orientation)
                     if isinstance(new_map, MultiPolygon):
                         """
                         print("map geoms")
@@ -186,15 +241,16 @@ class Graph:
                     new_map = Map(tuple(new_map.exterior.coords))
                     new_pieces = copy.deepcopy(self.pieces)
                     new_pieces.pop(index)
-                    new_pieces = adjust_pieces_to_try_point(new_pieces, distance_between_try_points)
                     new_graph = Graph(new_pieces, new_map, self.pieces_placed+[orientation], new_try_point)
                     new_graphs.append(new_graph)
 
 
 
                     self.ax.collections[-1].remove()
+                    self.GeoSeries_pieces_placed.pop(-1)
                 else:
                     self.ax.collections[-1].remove()
+                    self.GeoSeries_pieces_placed.pop(-1)
 
         if not new_graphs:return None
         return new_graphs
@@ -222,15 +278,21 @@ class Graph:
                 for coordinate in orientation.coordinates:
                     coordinate[0] += displacement[0]
                     coordinate[1] += displacement[1]
-    def place_piece(self, piece, color):
-        gpd.GeoSeries(Polygon(piece.coordinates)).plot(ax=self.ax, color = color )
-
-
+    def place_pieces(self, pieces):
+        GeoSeries_pieces = []
+        for piece in pieces:
+            placed_piece = gpd.GeoSeries(Polygon(piece.coordinates))
+            GeoSeries_pieces.append(placed_piece)
+            placed_piece.plot(ax = self.ax, color = piece.color)
+        return GeoSeries_pieces
+    
     def animate(self, interval: int = 100):
-        def update(obj):
-            print(obj)
-        ani = FuncAnimation(self.fig, update, frames=list(itertools.chain.from_iterable([obj.get_orientations() for obj in self.pieces])), interval=interval)
-
+        def update(obj_coordinates):
+            if len(self.ax.collections) > self.total_pieces_placed:
+                self.ax.collections[self.total_pieces_placed-self.current_piece_index].remove()
+            gpd.GeoSeries(Polygon(obj_coordinates)).plot(ax=self.ax, color='white')
+        ani = FuncAnimation(self.fig, update, frames=[Polygon(orientation.coordinates) for piece in self.pieces for orientation in piece.orientations], interval=interval)
+        plt.show()
 #        def update(obj):
 #            obj.plot(ax=self.ax, color='red')
 #            if len(self.ax.collections) > 2:
