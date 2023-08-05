@@ -8,6 +8,7 @@ from shapely.geometry import Polygon
 from graph import Graph
 import csv
 import json
+from random import randint
 """
 correct_node = None
 correct_node_idx = 62
@@ -76,12 +77,14 @@ print()
 print("the supposed correct node\n\n\n")
 print(correct_node.data)
 my_nodes = root.nodes_in_order()
-for i in range(1, root.count_nodes()+1-90):
+print("hi there")
+for i in range(1, root.count_nodes()+1):
     print(i)
     print(my_nodes[i-1])
     print()
 
 print("finished")
+my_graph.display_graph()
 """
 """
 tree_dict = root.tree_to_dict(root)
@@ -89,12 +92,18 @@ with open("tree_data.json", "w") as file:
     json.dump(tree_dict, file)
 """
 
-d = get_data_at_index(62)
-my_graph = Graph([Piece(x,y) for x,y in d['pieces_len_height']], Map(d['map_coordinates']), [Piece.Orientation(coord, "pink") for coord in d['pieces_placed_coordinates']], d['try_point'])
-print(my_graph.pieces[0].color)
+"""
+"""
+colors = ['orange', 'yellow', 'pink', 'green', "magenta", 'cyan']
+
+d = get_data_at_index(170)
+my_graph = Graph([Piece(x,y) for x,y in d['pieces_len_height']], Map(d['map_coordinates']), [Piece.Orientation(coord, colors[randint(0, len(colors)-1)]) for coord in d['pieces_placed_coordinates']], d['try_point'])
+print(my_graph)
 my_graph.display_graph()
-"""
-"""
+
+        
+    
+
 
 
 

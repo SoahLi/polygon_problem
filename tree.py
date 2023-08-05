@@ -117,7 +117,6 @@ class TreeNode:
         opts = jsbeautifier.default_options()
         opts.indent_size = 2
         formated = jsbeautifier.beautify(json.dumps(data), opts)
-        print(formated)
 
     def grab_data_at_index(self, target_index):
         with open("tree_data.json", "r") as file:

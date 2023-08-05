@@ -287,6 +287,7 @@ class Graph:
         return GeoSeries_pieces
     
     def animate(self, interval: int = 100):
+        print('hello')
         def update(obj_coordinates):
             if len(self.ax.collections) > self.total_pieces_placed:
                 self.ax.collections[self.total_pieces_placed-self.current_piece_index].remove()
@@ -298,3 +299,4 @@ class Graph:
 #            if len(self.ax.collections) > 2:
 #                print(self.current_piece_index)
 #                self.ax.collections[2-self.current_piece_index].remove()
+#                hello world!
