@@ -11,6 +11,7 @@ import time
 
 class Graph:
     def __init__(self, pieces: list = None, map: Map = None, pieces_placed: list[Piece] = [], try_point: tuple = (0,0)):
+        self.save = "hi"
         self.fig, self.ax = plt.subplots()
         self.x_values = [0, 5, 10, 15]
         self.y_values = [0, 5, 10, 15]
