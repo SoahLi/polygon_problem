@@ -36,138 +36,138 @@ class MapGenerator:
             'e': 'w',
             'w': 'e',
         }
+        self.add_line(randint(1, int(self.width/8)), "e")
+
         while sum(line_lengths) < self.width:
             #self.current_line = random_double_to_tenths(1,int(width/2))
             self.current_line = randint(1, int(self.width/2))
             self.current_direction = cardinal_directions[randint(0, 3)]
-            if self.current_direction == opposite_cardinal_directions[self.last_direction] or self.current_direction == self.last_direction:
+            if self.last_direction == opposite_cardinal_directions[self.current_direction] or self.current_direction == self.last_direction:
                 continue
+            print(self.current_direction)
             if self.current_direction == "n":
                 print("iteration" + str(self.count))
-                if self.current_coord[1] + self.current_line < self.height:
-                    while self.line_intersects():
-                        print([(x, y) for x, y in self.current_coord])
-                        if list(self.all_GeoSeries_lines[-1].iloc[0].coords[-1]) == [(x, y) for x, y in self.current_coord]:
-                            continue
-                        if self.current_direction == 'n' or self.current_direction == 'e':
-                            self.current_line = round(self.current_line - .1, 1)
-                        elif self.current_direction == 's' or self.current_direction == 'w':
-                            self.current_line = round(self.current_line - .1, 1)
-                        print(self.current_line)
-                    temp = deepcopy(self.current_coord)
-                    self.current_coord[1] += self.current_line
-                    #not_too_close()
-                    self.all_GeoSeries_lines.append(gpd.GeoSeries(LineString([temp, self.current_coord])))
-                    print("line from")
-                    print(self.current_coord)
-                    print('to')
-                    print(self.current_coord)
-                    self.height_until_edge += self.current_line
+                while self.current_coord[1] + self.current_line > self.height:
+                    self.current_line = round(self.current_line - .1, 1)
                 else:
+                    if self.current_line == 0:
+                        continue
+                while self.line_intersects():
+                    if self.current_line == 0:
+                        continue
+                    self.current_line = round(self.current_line - .1, 1)
+                if self.current_line == 0:
                     continue
+                self.add_line()
             if self.current_direction == "s":
                 print("iteration" + str(self.count))
-                if self.current_coord[1] - self.current_line > 0:
-                    while self.line_intersects():
-                        print([(x, y) for x, y in self.current_coord])
-                        if list(self.all_GeoSeries_lines[-1].iloc[0].coords[-1]) == [(x, y) for x, y in self.current_coord]:
-                            continue
-                        if self.current_direction == 'n' or self.current_direction == 'e':
-                            self.current_line = round(self.current_line - .1, 1)
-                        elif self.current_direction == 's' or self.current_direction == 'w':
-                            self.current_line = round(self.current_line - .1, 1)
-                        print(self.current_line)
-                    temp = deepcopy(self.current_coord)
-                    self.current_coord[1] -= self.current_line
-                    #not_too_close()
-                    self.all_GeoSeries_lines.append(gpd.GeoSeries(LineString([temp, self.current_coord])))
-                    print("line from")
-                    print(self.current_coord)
-                    print('to')
-                    print(self.current_coord)
-                    self.height_until_edge -= self.current_line
+                while self.current_coord[1] - self.current_line < 0:
+                    self.current_line = round(self.current_line - .1, 1)
                 else:
+                    if self.current_line == 0:
+                        continue
+                while self.line_intersects():
+                    if self.current_line == 0:
+                        continue
+                    self.current_line = round(self.current_line - .1, 1)
+                if self.current_line == 0:
                     continue
+                self.add_line()
             if self.current_direction == "e":
                 print("iteration" + str(self.count))
-                if self.current_coord[0] + self.current_line < self.width:
-                    while self.line_intersects():   
-                        print([(x, y) for x, y in self.current_coord])
-                        if list(self.all_GeoSeries_lines[-1].iloc[0].coords[-1]) == [(x, y) for x, y in self.current_coord]:
-                            continue
-                        if self.current_direction == 'n' or self.current_direction == 'e':
-                            self.current_line = round(self.current_line - .1, 1)
-                        elif self.current_direction == 's' or self.current_direction == 'w':
-                            self.current_line = round(self.current_line - .1, 1)
-                        print(self.current_line)
-                    temp = deepcopy(self.current_coord)
-                    self.current_coord[0] += self.current_line
-                    #not_too_close()
-                    self.all_GeoSeries_lines.append(gpd.GeoSeries(LineString([temp, self.current_coord])))
-                    print("line from")
-                    print(self.current_coord)
-                    print('to')
-                    print(self.current_coord)
-                    self.width_until_edge += self.current_line
+                while self.current_coord[0] + self.current_line > self.width:
+                    self.current_line = round(self.current_line - .1, 1)
                 else:
+                    if self.current_line == 0:
+                        continue
+                while self.line_intersects():
+                    if self.current_line == 0:
+                        continue
+                    self.current_line = round(self.current_line - .1, 1)
+                if self.current_line == 0:
                     continue
+                self.add_line()
             if self.current_direction == "w":
                 print("iteration" + str(self.count))
-                if self.current_coord[0] - self.current_line > 0:
-                    while self.line_intersects():
-                        print([(x, y) for x, y in self.current_coord])
-                        if list(self.all_GeoSeries_lines[-1].iloc[0].coords[-1]) == [(x, y) for x, y in self.current_coord]:
-                            continue
-                        if self.current_direction == 'n' or self.current_direction == 'e':
-                            self.current_line = round(self.current_line - .1, 1)
-                        elif self.current_direction == 's' or self.current_direction == 'w':
-                            self.current_line = round(self.current_line - .1, 1)
-                        print(self.current_line)
-                    temp = deepcopy(self.current_coord)
-                    self.current_coord[0] -= self.current_line
-                    #not_too_close()
-                    self.all_GeoSeries_lines.append(gpd.GeoSeries(LineString([temp, self.current_coord])))
-                    print("line from")
-                    print(self.current_coord)
-                    print('to')
-                    print(self.current_coord)
-                    self.width_until_edge -= self.current_line
+                while self.current_coord[0] - self.current_line < 0:
+                    self.current_line = round(self.current_line - .1, 1)
                 else:
+                    if self.current_line == 0:
+                        continue
+                while self.line_intersects():
+                    if self.current_line == 0:
+                        continue
+                    self.current_line = round(self.current_line - .1, 1)
+                if self.current_line == 0:
                     continue
+                self.add_line()
             if self.width_until_edge == self.width or self.height_until_edge == self.height:
                 break
-            self.directions.append(self.current_direction)
-            self.last_direction = self.current_direction
             self.count += 1
 
     def line_intersects(self):
-        print("hi")
         if self.current_direction == 'n':
-            current_GeoSeries_line = gpd.GeoSeries(LineString([self.current_coord, [self.current_coord[0], self.current_coord[1] + self.current_line]]))
+            new_coord = [self.current_coord[0], self.current_coord[1] + self.current_line]
+            new_coord = [round(coord, 1) for coord in new_coord]
+            current_GeoSeries_line = gpd.GeoSeries(LineString([self.current_coord, new_coord]))
             #print("current line with modification")
             #print([self.current_coord, [self.current_coord[0], self.current_coord[1] + self.current_line]])
 
         if self.current_direction == 's':
-            current_GeoSeries_line = gpd.GeoSeries(LineString([self.current_coord, [self.current_coord[0], self.current_coord[1] - self.current_line]]))
+            new_coord = [self.current_coord[0], self.current_coord[1] - self.current_line]
+            new_coord = [round(coord, 1) for coord in new_coord]
+            current_GeoSeries_line = gpd.GeoSeries(LineString([self.current_coord, new_coord]))
             #print("current line with modification")
             #print([self.current_coord, [self.current_coord[0], self.current_coord[1] - self.current_line]])
 
         if self.current_direction == 'e':
-            current_GeoSeries_line = gpd.GeoSeries(LineString([self.current_coord, [self.current_coord[0] + self.current_line, self.current_coord[1]]]))
+            new_coord = [self.current_coord[0] + self.current_line, self.current_coord[1]]
+            new_coord = [round(coord, 1) for coord in new_coord]
+            current_GeoSeries_line = gpd.GeoSeries(LineString([self.current_coord, new_coord]))
             #print("current line with modification")
             #print([self.current_coord, [self.current_coord[0] + self.current_line, self.current_coord[1]]])
 
         if self.current_direction == 'w':
-            current_GeoSeries_line = gpd.GeoSeries(LineString([self.current_coord, [self.current_coord[0] - self.current_line, self.current_coord[1]]]))
+            new_coord = [self.current_coord[0] - self.current_line, self.current_coord[1]]
+            new_coord = [round(coord, 1) for coord in new_coord]
+            current_GeoSeries_line = gpd.GeoSeries(LineString([self.current_coord, new_coord]))
             #print("current line with modification")
             #print([self.current_coord, [self.current_coord[0] - self.current_line, self.current_coord[1]]])
         current_GeoSeries_line.plot(ax = self.ax)
         for i in range(len(self.all_GeoSeries_lines)-1):
             if current_GeoSeries_line.intersects(self.all_GeoSeries_lines[i]).bool():
                 #print("self.current_line intersects with " + str(i))
-                #self.ax.collections[-1].remove()
+                self.ax.collections[-1].remove()
                 return True
+            if current_GeoSeries_line.touches(self.all_GeoSeries_lines[i]).bool():
+                #print("self.current_line intersects with " + str(i))
+                self.ax.collections[-1].remove()
+                return True
+        self.ax.collections[-1].remove()
         return False
+    
+    def add_line(self, line = None, direction = None):
+        if line:
+            self.current_line = line
+        if direction:
+            self.current_direction = direction
+        temp = deepcopy(self.current_coord)
+        if self.current_direction == "n":
+            self.current_coord[1] += self.current_line
+            self.height_until_edge += self.current_line
+        if self.current_direction == "e":
+            self.current_coord[0] += self.current_line
+            self.width_until_edge += self.current_line
+        if self.current_direction == "s":
+            self.current_coord[1] -= self.current_line
+            self.height_until_edge -= self.current_line
+        if self.current_direction == "w":
+            self.current_coord[0] -= self.current_line
+            self.width_until_edge -= self.current_line
+        gpd.GeoSeries(LineString([temp, self.current_coord])).plot(ax = self.ax)
+        self.all_GeoSeries_lines.append(gpd.GeoSeries(LineString([temp, self.current_coord])))
+        self.directions.append(self.current_direction)
+        self.last_direction = self.current_direction
     
     def not_too_close(self):
         current_point = gpd.GeoSeries(Point(self.current_coord))
@@ -184,6 +184,6 @@ class MapGenerator:
                 current_point.plot(ax = self.ax)
         self.ax.collections[-1].remove()
 
-new_map = MapGenerator(5, 5)
+new_map = MapGenerator(25,25)
 new_map = new_map.create_map()
 print()
