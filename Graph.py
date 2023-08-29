@@ -11,7 +11,6 @@ import time
 
 class Graph:
     def __init__(self, pieces: list = None, map: Map = None, pieces_placed: list[Piece] = [], try_point: tuple = (0,0)):
-        self.save = "hi"
         self.fig, self.ax = plt.subplots()
         self.x_values = [0, 5, 10, 15]
         self.y_values = [0, 5, 10, 15]
@@ -287,7 +286,7 @@ class Graph:
             placed_piece.plot(ax = self.ax, color = piece.color)
         return GeoSeries_pieces
     
-    def animate(self, interval: int = 100):
+    def animate(self, interval: int = 500):
         print('hello')
         def update(obj_coordinates):
             if len(self.ax.collections) > self.total_pieces_placed:

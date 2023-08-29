@@ -3,7 +3,7 @@ from piece import Piece
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon, MultiPolygon, LineString
 from graph import Graph
 import csv
 from tree import TreeNode
@@ -27,14 +27,25 @@ with open("tree_data.json", 'w', encoding="utf8") as file:
     test = file.read()
 print(test)
 """
+"""
 fig, ax = plt.subplots()
-gpd.GeoSeries(Polygon([0,0]))
+first = gpd.GeoSeries(LineString([[2,0], [2,2]]))
+first.plot(ax = ax)
+second = gpd.GeoSeries(LineString([[2,2],[2,0]]))
+second.plot(ax = ax)
+print(first.crosses(second))
+plt.show()
+"""
+
+current_coord = [1,2]
+print([tuple(current_coord)])
 
 
+def erase_the_tree_and_write_hello():
+    with open("tree_data.json", "w") as file:
+        file.write("hello")
 
-    
-
-
+erase_the_tree_and_write_hello()
 
 """
 fig, ax = plt.subplots()

@@ -112,11 +112,7 @@ class TreeNode:
             data["children"].append(child_json)
             
         return data
-    
-    def print_data(self, data):
-        opts = jsbeautifier.default_options()
-        opts.indent_size = 2
-        formated = jsbeautifier.beautify(json.dumps(data), opts)
+
 
     def grab_data_at_index(self, target_index):
         with open("tree_data.json", "r") as file:
