@@ -104,8 +104,6 @@ class MapGenerator:
 
         while sum(line_lengths) < self.width:
             self.current_line = randint(1, int(self.width/2))
-            if cycle_key == "s":
-                self.current_line = randint(1, int(self.width/1.4))
             self.current_direction = current_cycle[cycle_pointer]
             # if the direction chosen is on the same axis as the previous line placed
             """
