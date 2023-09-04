@@ -10,7 +10,7 @@ import csv
 import time
 
 class Graph:
-    def __init__(self, pieces: list = None, map: Map = None, pieces_placed: list[Piece] = [], try_point: tuple = (0,0)):
+    def __init__(self, pieces: list = [], map: Map = None, pieces_placed: list[Piece] = [], try_point: tuple = (0,0)):
         self.fig, self.ax = plt.subplots()
         self.x_values = [0, 5, 10, 15]
         self.y_values = [0, 5, 10, 15]
@@ -262,9 +262,9 @@ class Graph:
         for line in self.map.invisible_lines:
             gpd.GeoSeries(line).plot(ax=self.ax, color='purple')
         """
-        gpd.GeoSeries(self.map.shapely_map).plot(ax = self.ax, color='blue')
         self.border = gpd.GeoSeries(self.map.border)
-        self.border.plot(ax = self.ax, color='red')
+        self.border.plot(ax = self.ax, facecolor = "none", edgecolor = "black")
+        gpd.GeoSeries(self.map.shapely_map).plot(ax = self.ax, color='blue')
 
     
     def display_graph(self, animate: bool = False):

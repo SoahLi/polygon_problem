@@ -6,13 +6,15 @@
     "configurations": [
 
 
+
+
     
         
         {
             "name": "Python: console.py",
             "type": "python",
             "request": "launch",
-            "program": "console.py",
+            "program": "rm2.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }
