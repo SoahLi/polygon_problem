@@ -39,7 +39,7 @@ class MapGenerator:
         self.directions = []
         self.fig, self.ax = plt.subplots() 
 
-    def generate_map(self):
+    def generate_map_coordinates(self):
         self.reset()
         line_lengths = []
         cardinal_cycles = {"e": ['e', 'n', 'e', 's'],
@@ -50,6 +50,7 @@ class MapGenerator:
         current_cycle = cardinal_cycles[cycle_key]
         cycle_pointer = 0
         recycle_counter = 1
+        recycle_line_number = 0
         # add first line as east for consistency
         #self.add_line(randint(1, int(self.width/8)), "e")
 
@@ -59,6 +60,8 @@ class MapGenerator:
             else:
                 return False
         def recycle():
+            if len(self.all_GeoSeries_lines) == 0:
+                return
             nonlocal cycle_pointer
             cycle_pointer -= 1
             if cycle_pointer == -1:
@@ -79,13 +82,16 @@ class MapGenerator:
             self.current_line -= old_line_length
             self.all_GeoSeries_lines.pop(-1)
             self.ax.collections[-1].remove()
-            self.current_coord[0] = self.all_GeoSeries_lines[-1].iloc[-1].coords[1][0]
-            self.current_coord[1] = self.all_GeoSeries_lines[-1].iloc[-1].coords[1][1]
+            if len(self.all_GeoSeries_lines) == 0:
+                self.current_coord = [0,0]
+            else:
+                self.current_coord[0] = self.all_GeoSeries_lines[-1].iloc[-1].coords[1][0]
+                self.current_coord[1] = self.all_GeoSeries_lines[-1].iloc[-1].coords[1][1]
 
 
         def can_complete():
             #if cycle_key == "s" and (self.height_until_edge == 9.4):
-            if cycle_key == "s" and (self.height_until_edge == 9.9):
+            if cycle_key == "s" and (self.height_until_edge == 9.4):
                 while self.current_direction != "w":
                     recycle()
                     self.current_direction = current_cycle[cycle_pointer]
@@ -96,6 +102,7 @@ class MapGenerator:
                     for i in range(recycle_counter):
                         recycle()
                     recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
                     return "line_intersection"
                 self.add_line(self.height - self.height_until_edge, "s")
                 return "graph_completed"
@@ -103,7 +110,10 @@ class MapGenerator:
                 
 
         while sum(line_lengths) < self.width:
+                
             self.current_line = randint(1, int(self.width/2))
+            if len(self.all_GeoSeries_lines) == 0:
+                self.current_line += randint(2, 3)
             self.current_direction = current_cycle[cycle_pointer]
             # if the direction chosen is on the same axis as the previous line placed
             """
@@ -120,29 +130,31 @@ class MapGenerator:
                         for i in range(recycle_counter):
                             recycle()
                         recycle_counter += 1
+                        recycle_line_number = len(self.all_GeoSeries_lines)-1
                         continue
                 while self.line_intersects():
                     if line_does_not_change():
                         for i in range(recycle_counter):
                             recycle()
                         recycle_counter += 1
+                        recycle_line_number = len(self.all_GeoSeries_lines)-1
                         continue
                     #decrease the length of the line
                     self.current_line = round(self.current_line - .1, 1)
                 """
-                self.not_too_close()
-                while self.line_intersects():
-                    if line_does_not_change():
-                        for i in range(recycle_counter):
-                            recycle()
-                        recycle_counter += 1
-                        continue
-                    self.current_line = round(self.current_line - .1, 1)                
                 """
+                if self.not_too_close() == False:
+                    for i in range(recycle_counter):
+                        recycle()
+                    recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
+                    continue
+                #self.current_line = round(self.current_line - .1, 1)                
                 if line_does_not_change():
                     for i in range(recycle_counter):
                         recycle()
                     recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
                     continue
                 self.add_line()
                 if self.height_until_edge == 0:
@@ -175,28 +187,30 @@ class MapGenerator:
                         for i in range(recycle_counter):
                             recycle()
                         recycle_counter += 1
+                        recycle_line_number = len(self.all_GeoSeries_lines)-1
                         continue
                 while self.line_intersects():
                     if line_does_not_change():
                         for i in range(recycle_counter):
                             recycle()
                         recycle_counter += 1
+                        recycle_line_number = len(self.all_GeoSeries_lines)-1
                         continue
                     self.current_line = round(self.current_line - .1, 1)
                 """
-                self.not_too_close()
-                while self.line_intersects():
-                    if line_does_not_change():
-                        for i in range(recycle_counter):
-                            recycle()
-                        recycle_counter += 1
-                        continue
-                    self.current_line = round(self.current_line - .1, 1)                
                 """
+                if self.not_too_close() == False:
+                    for i in range(recycle_counter):
+                        recycle()
+                    recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
+                    continue
+                #self.current_line = round(self.current_line - .1, 1)                
                 if line_does_not_change():
                     for i in range(recycle_counter):
                         recycle()
                     recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
                     continue
                 self.add_line()
                 if self.height_until_edge == self.height:
@@ -220,6 +234,7 @@ class MapGenerator:
                         for i in range(recycle_counter):
                             recycle()
                         recycle_counter += 1
+                        recycle_line_number = len(self.all_GeoSeries_lines)-1
 
                         continue
                 while self.line_intersects():
@@ -227,22 +242,23 @@ class MapGenerator:
                         for i in range(recycle_counter):
                             recycle()
                         recycle_counter += 1
+                        recycle_line_number = len(self.all_GeoSeries_lines)-1
                         continue
                     self.current_line = round(self.current_line - .1, 1)
                 """
-                self.not_too_close()
-                while self.line_intersects():
-                    if line_does_not_change():
-                        for i in range(recycle_counter):
-                            recycle()
-                        recycle_counter += 1
-                        continue
-                    self.current_line = round(self.current_line - .1, 1)                
                 """
+                if self.not_too_close() == False:
+                    for i in range(recycle_counter):
+                        recycle()
+                    recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
+                    continue
+                #self.current_line = round(self.current_line - .1, 1)                
                 if line_does_not_change():
                     for i in range(recycle_counter):
                         recycle()
                     recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
                     continue
                 self.add_line()
                 if self.width_until_edge == 0:
@@ -265,28 +281,30 @@ class MapGenerator:
                         for i in range(recycle_counter):
                             recycle()
                         recycle_counter += 1
+                        recycle_line_number = len(self.all_GeoSeries_lines)-1
                         continue
                 while self.line_intersects():
                     if line_does_not_change():
                         for i in range(recycle_counter):
                             recycle()
                         recycle_counter += 1
+                        recycle_line_number = len(self.all_GeoSeries_lines)-1
                         continue
                     self.current_line = round(self.current_line - .1, 1)
                 """
-                self.not_too_close()
-                while self.line_intersects():
-                    if line_does_not_change():
-                        for i in range(recycle_counter):
-                            recycle()
-                        recycle_counter += 1
-                        continue
-                    self.current_line = round(self.current_line - .1, 1)                
                 """
+                if self.not_too_close() == False:
+                    for i in range(recycle_counter):
+                        recycle()
+                    recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
+                    continue
+                #self.current_line = round(self.current_line - .1, 1)                
                 if line_does_not_change():
                     for i in range(recycle_counter):
                         recycle()
                     recycle_counter += 1
+                    recycle_line_number = len(self.all_GeoSeries_lines)-1
                     continue
                 self.add_line()
                 if self.width_until_edge == self.width:
@@ -300,7 +318,8 @@ class MapGenerator:
                         cycle_pointer = 0
                         continue
                         #self.height_until_edge = self.all_GeoSeries_lines[-1].iloc[-1].coords[1][1]
-            recycle_counter = 1
+            if len(self.all_GeoSeries_lines)-1 == recycle_line_number:
+                recycle_counter = 1
             cycle_pointer += 1
             if cycle_pointer == len(current_cycle):
                 cycle_pointer = 0
@@ -389,7 +408,7 @@ class MapGenerator:
             companion_coord = [self.current_coord[0]  - self.current_line, self.current_coord[1]]
         current_coord = gpd.GeoSeries(Point(companion_coord))
         current_coord.plot(ax = self.ax)
-        for i in range(len(self.all_GeoSeries_lines)-1):
+        for i in range(len(self.all_GeoSeries_lines)):
             while round(current_coord.distance(self.all_GeoSeries_lines[i])[0], 1) < .6:
                 self.ax.collections[-1].remove()
                 if self.current_direction == "n":
@@ -400,8 +419,8 @@ class MapGenerator:
                     companion_coord[0] = round(companion_coord[0] + .1, 1)
                 elif self.current_direction == "e":
                     companion_coord[0] = round(companion_coord[0] - .1, 1)
-                if current_coord[0] == companion_coord[0] and current_coord[1] == companion_coord[1] :
-                    return
+                if self.current_coord[0] == companion_coord[0] and self.current_coord[1] == companion_coord[1] :
+                    return False
                 current_coord = gpd.GeoSeries(Point(companion_coord))
                 current_coord.plot(ax = self.ax)
         if self.current_direction == "n":
@@ -414,6 +433,7 @@ class MapGenerator:
             self.current_line = round(abs(companion_coord[0] - self.current_coord[0]), 1)
         print(self.current_line)
         self.ax.collections[-1].remove()
+        return True
 
 """
 new_map = MapGenerator(10,10)
@@ -426,4 +446,8 @@ print()
 maps = []
 my_map_generator = MapGenerator(10,10)
 for i in range(20):
-    maps.append(my_map_generator.generate_map())
+
+    maps.append(Graph(map = Map(my_map_generator.generate_map_coordinates())))
+
+maps[0].display_graph()
+
