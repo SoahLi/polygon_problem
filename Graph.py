@@ -197,7 +197,6 @@ class Graph:
             print(pieces[0].orientations[0].coordinates)
                 
         """                 
-        #CHAT
 
         #method instuction start
         new_graphs = []
@@ -227,7 +226,7 @@ class Graph:
                         print(new_map)
                         print("the geoms")
                         for geom in new_map.geoms:
-                            print(tuple(geom.exterior.coords))
+                         ¡   print(tuple(geom.exterior.coords))
                         """
                         """
                         new_fig, new_ax = plt.subplots()

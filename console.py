@@ -70,13 +70,12 @@ def node_information_at_index(idx: int = None):
     colors = ['orange', 'yellow', 'pink', 'green', "magenta", 'cyan']
     data = file_formater()
     d = get_data_at_index(data["highest_node"])
-    my_graph = Graph([Piece(x,y) for x,y in d['pieces_len_height']], Map(d['map_coordinates']), [Piece.Orientation(coord, colors[randint(0, len(colors)-1)]) for coord in d['pieces_placed_coordinates']], d['try_point'])
-    #print("WERWREWR ")
+    my_graph = Graph([Piece(x,y) for x,y in d['pieces_len_height']], Map(d['map_coordinates']), [Piece.Orientation(coord, colors[randint(0, len(colors)-1)]) for coord in d['pieces_placed_coordinates']], d['try_point']) 
     my_graph.display_graph()
 
-node_information_at_index(172)
 
 def test_tree():
+    #read in pieces & create Piece()
     my_pieces = []
     with open("pieces.csv", 'r') as file:
         csvreader = csv.reader(file)
@@ -87,7 +86,10 @@ def test_tree():
     for piece in my_graph.pieces:
         print("piece with width " + str(piece.width) + " and height " + str(piece.height) + " is color " + piece.color)
     root = TreeNode(my_graph)
-    my_graph.map_creator(['e','n','e','n','w','s'], [8,3,4,7,12,10])
+    with open("map.json") as file:
+        content = file.read()
+        data_dict = json.loads(content)
+    my_graph.map_creator(data_dict["directions"], data_dict["line_lengths"])
     my_graph.plot_map()
     root.add_children(root.data.fill_perimater())
     for i in range(4):
@@ -137,9 +139,19 @@ def random_map(width, height):
     print("done")
     fig.show()
 
-#test_tree()
+test_tree()
 
 
+"""
+"coordinates": ["e","n","e","n","w","s"],
+"directions": [8,3,4,7,12,10]
 
+Length, Width
+2,5
+6,3
+10,2
+5,6
+5,6
+"""
 
 

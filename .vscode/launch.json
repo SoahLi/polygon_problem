@@ -8,13 +8,14 @@
 
 
 
+
     
         
         {
             "name": "Python: console.py",
             "type": "python",
             "request": "launch",
-            "program": "rm2.py",
+            "program": "console.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }

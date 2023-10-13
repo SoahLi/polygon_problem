@@ -26,6 +26,15 @@ class MapGenerator:
         self.all_GeoSeries_lines = []
         self.directions = []
         self.fig, self.ax = plt.subplots() 
+
+    def generate_maps(self, num_maps: int):
+        try:
+            maps = []
+            for i in range(num_maps):
+                maps.append(Graph(map = Map(self.generate_map_coordinates())))
+            return maps
+        except:
+            return self.generate_maps(num_maps)
     def reset(self):
         self.width_until_edge = self.width
         self.height_until_edge = self.height
@@ -434,20 +443,31 @@ class MapGenerator:
         print(self.current_line)
         self.ax.collections[-1].remove()
         return True
+    
+    def maps_to_dict(self, maps):
+        data = {}
+        for i in range(len(maps)):
+            data[i] = {
+                "index": i,
+                "data": {
+                    "pieces_len_height": [[piece.width, piece.height] for piece in maps[i].pieces],
+                    "map_coordinates": maps[i].map.coordinates[:-1],
+                    "pieces_placed_coordinates": [orientation.coordinates for orientation in maps[i].pieces_placed],
+                    "try_point": maps[i].try_point,
+                },
+            }
+                
+        return data
 
-"""
-new_map = MapGenerator(10,10)
-new_map = new_map.create_map()
-the_map = Map(new_map)
-the_graph = Graph(map = the_map)
-the_graph.display_graph()
-print()
-"""
-maps = []
+    def write_data(self, maps_data: list):
+        with open("generated_map_data.json", "w") as file:
+            json.dump(maps_data, file)
+
+
 my_map_generator = MapGenerator(10,10)
-for i in range(20):
+maps = my_map_generator.generate_maps(5)
+maps_data = my_map_generator.maps_to_dict()
 
-    maps.append(Graph(map = Map(my_map_generator.generate_map_coordinates())))
+my_map_generator.write_data(maps_data)
 
-maps[0].display_graph()
 
