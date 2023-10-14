@@ -1,17 +1,16 @@
 from map import Map
 from piece import Piece
-import itertools
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
 from shapely.geometry import Polygon, MultiPolygon, Point
 import copy
-import csv
-import time
+
 
 class Graph:
     def __init__(self, pieces: list = [], map: Map = None, pieces_placed: list[Piece] = [], try_point: tuple = (0,0)):
         self.fig, self.ax = plt.subplots()
+        #These ticks are helpful for now but will need to make dynamic at some point
         self.x_values = [0, 5, 10, 15]
         self.y_values = [0, 5, 10, 15]
         self.ax.set_xticks(self.x_values)
@@ -25,12 +24,20 @@ class Graph:
         self.pieces_placed = pieces_placed
         if self.map: 
             self.border = self.map.border
+            #The 2 comes from the Map and the border
             self.total_pieces_placed = 2+len(self.pieces_placed)# + len(self.map.invisible_lines)
             self.plot_map()
+        #The reason(I think) You need to replace the pieces, is because the pieces effectively become the new border. Without placing the pieces, create a hole in the border
         self.GeoSeries_pieces_placed = self.place_pieces(self.pieces_placed)
         self.pieces = pieces
         if try_point != (0,0) and pieces:
-            def adjust_pieces_to_try_point(pieces, distance):
+            def adjust_pieces_to_try_point(pieces, distance: list[int]):
+                """
+                transform piece coordinates to be tested on try point
+                Args:
+                    pieces: the pieces
+                    distance: the x and y distances to transform pieces
+                """
                 for piece in pieces:
                     for orientation in piece.orientations:                 
                         orientation.coordinates = [[coord[0] + distance[0], coord[1] + distance[1]] for coord in orientation.coordinates]  
@@ -43,6 +50,12 @@ class Graph:
         self.try_point = try_point
         self.is_complete = False
         #self.displace_pieces(piece_displacement)
+
+    def plot_map(self):
+        self.border = gpd.GeoSeries(self.map.border)
+        self.border.plot(ax = self.ax, facecolor = "none", edgecolor = "black")
+        gpd.GeoSeries(self.map.shapely_map).plot(ax = self.ax, color='blue')
+
     """
     SETS PIECES OUTSIDE OF MAP
     """
@@ -59,6 +72,9 @@ class Graph:
             f"Try Point: {self.try_point}\n"
 
     def map_creator(self, directions: list[str], line_lengths: list[str]):
+        """
+        Create a Map() object based off of a list of directions and line_lengths
+        """
         if not line_lengths and not directions:
             return
         if len(line_lengths) != len(directions):
@@ -93,13 +109,12 @@ class Graph:
             self.map = the_map
         return the_map
 
-    def fill_perimater(self):
+    def solve(self):
         """
         for each piece, determine whether it can fit at the try_point 0,0
         if if can, keep going with this piece, updating the try_point and testing pieces until completing the perimater
         create a new Map with the perimater filled (it would be a smaller version of the previous map)
         repeat until all pieces are filled
-
         
         """
         #at the end of this code I need:
@@ -153,10 +168,17 @@ class Graph:
                 pass
             return list(map(lambda x: round(x, 1), current_coord))
         def find_next_coord():
+            """
+            Traverse the edge of the map until a new point is found that does not touch 
+            another piece(The point usually lies on the corner of a piece)
+            """
+            #grab coordinates of map exterior corners
             map_coords = [list(coord) for coord in self.map.shapely_map.exterior.coords[::-1]]
             current_coord = [map_coords[0][0], map_coords[0][1]]
             for i in range(1, len(map_coords)-1):
+                #while current coord not equal the next coord
                 while current_coord != map_coords[i]:
+                    #I should probably do something about this
                     if current_coord == map_coords[i]:
                         break
                     does_touch_piece = False
@@ -172,79 +194,38 @@ class Graph:
                     else:
                         self.ax.collections[-1].remove()
                         return list(map(int, current_coord))
-
-
-
-                    
-            
             self.ax.collections[-1].remove()
             current_coord = [int(elem) for elem in current_coord]
             return current_coord
 
                     
-        #MY VERSION OF ADJUST_PIECES_TO_TRY_POINT
-        """
-        def adjust_pieces_to_try_point(pieces, distance: list[int]):
-            print('before')
-            print(pieces[0].orientations[0].coordinates)
-
-            for piece in pieces:
-                for orientation in piece.orientations:                 
-                    for coordinate in orientation.coordinates:
-                        coordinate[0] = coordinate[0] + distance[0]
-                        coordinate[1] = coordinate[1] + distance[1]
-            print('after')
-            print(pieces[0].orientations[0].coordinates)
-                
-        """                 
 
         #method instuction start
-        new_graphs = []
+        new_graphs = [] #child_graphs
+        #for each piece
         for index in range(len(self.pieces)):
+            #for each orientation of each piece
             for orientation in self.pieces[index].orientations:
-                shapely_orientation = Polygon(orientation.coordinates)
-                current_orientation = gpd.GeoSeries(shapely_orientation)
-                current_orientation.plot(ax=self.ax)
-                self.GeoSeries_pieces_placed.append(current_orientation)
-                # UNKOWN WHY THE IF STATEMENT BELOW WORKS
-                if current_orientation.touches(self.border, align=True).bool():
-                    """
-                    coordinates_on_perimater = []
-                    for i in range(len(self.map.coordinates)-1):
-                        for coordinate in orientation.coordinates:
-                            if on_line(self.map.coordinates[i], self.map.coordinates[i+1], coordinate) and doesent_touch_placed_pieces(coordinate) and doesent_touch_map_corner(coordinate):
-                                coordinates_on_perimater.append(coordinate)
-                    print(coordinates_on_perimater)
-                    new_try_point = find_highest_coord(coordinates_on_perimater)
-                    """
-                    new_try_point = find_next_coord()
 
+                shapely_orientation = Polygon(orientation.coordinates)
+                GeoSeries_orientation = gpd.GeoSeries(shapely_orientation)
+                GeoSeries_orientation.plot(ax=self.ax)
+                self.GeoSeries_pieces_placed.append(GeoSeries_orientation)
+                #if the placed piece is outside of the map
+                if GeoSeries_orientation.touches(self.border, align=True).bool():
+                    new_try_point = find_next_coord()
                     new_map = self.map.eat_map(shapely_orientation)
+
+                    #if new map creates multimap(Break in map from piece)
                     if isinstance(new_map, MultiPolygon):
-                        """
-                        print("map geoms")
-                        print(new_map)
-                        print("the geoms")
-                        for geom in new_map.geoms:
-                         ¡   print(tuple(geom.exterior.coords))
-                        """
-                        """
-                        new_fig, new_ax = plt.subplots()
-                        gpd.GeoSeries(shapely_orientation).plot(ax=new_ax, color='purple')
-                        for polygon in new_map.geoms:
-                            gpd.GeoSeries(polygon).plot(ax=new_ax)
-                        self.ax.collections[-1].remove()
-                        """
                         continue
                         
                     new_map = Map(tuple(new_map.exterior.coords))
                     new_pieces = copy.deepcopy(self.pieces)
+                    #remove placed piece
                     new_pieces.pop(index)
                     new_graph = Graph(new_pieces, new_map, self.pieces_placed+[orientation], new_try_point)
                     new_graphs.append(new_graph)
-
-
-
                     self.ax.collections[-1].remove()
                     self.GeoSeries_pieces_placed.pop(-1)
                 else:
@@ -254,16 +235,6 @@ class Graph:
         if not new_graphs:return None
         return new_graphs
             
-
-
-    def plot_map(self):
-        """
-        for line in self.map.invisible_lines:
-            gpd.GeoSeries(line).plot(ax=self.ax, color='purple')
-        """
-        self.border = gpd.GeoSeries(self.map.border)
-        self.border.plot(ax = self.ax, facecolor = "none", edgecolor = "black")
-        gpd.GeoSeries(self.map.shapely_map).plot(ax = self.ax, color='blue')
 
     
     def display_graph(self, animate: bool = False):
@@ -278,6 +249,9 @@ class Graph:
                     coordinate[0] += displacement[0]
                     coordinate[1] += displacement[1]
     def place_pieces(self, pieces):
+        """
+        Function to display pieces, which become the new border
+        """
         GeoSeries_pieces = []
         for piece in pieces:
             placed_piece = gpd.GeoSeries(Polygon(piece.coordinates))

@@ -58,6 +58,9 @@ class Map:
                 largest_y = current_y
         return largest_x+self.border_length, largest_y+self.border_length
     def eat_map(self, chunk_to_eat):
+        """
+        remove the chunck, creating a new map with removed piece
+        """
         new_map = copy.deepcopy(self.shapely_map)
         return new_map.difference(chunk_to_eat)
 

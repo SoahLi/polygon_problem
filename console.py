@@ -37,20 +37,7 @@ def write_data(root: TreeNode):
     with open("tree_data.json", "w") as file:
         json.dump(tree_dict, file)
 
-def get_data_at_index(target_index):
-    with open("tree_data.json", "r") as file:
-        content = file.read()
-        data_dict = json.loads(content)
-    def dfs(node):
-        if int(node['index']) == target_index:
-            return node['data']
-        for child in node['children']:
-            result = dfs(child)
-            if result:
-                return result
-        return None
 
-    return dfs(data_dict)
 
 def display_map(idx = 1):
     with open('tree_data.json', 'r') as file:
@@ -67,6 +54,19 @@ def print_node_information(root: TreeNode):
 
 
 def node_information_at_index(idx: int = None):
+    def get_data_at_index(target_index):
+        with open("tree_data.json", "r") as file:
+            content = file.read()
+            data_dict = json.loads(content)
+        def dfs(node):
+            if int(node['index']) == target_index:
+                return node['data']
+            for child in node['children']:
+                result = dfs(child)
+                if result:
+                    return result
+            return None
+        return dfs(data_dict)
     colors = ['orange', 'yellow', 'pink', 'green', "magenta", 'cyan']
     data = file_formater()
     d = get_data_at_index(data["highest_node"])
@@ -74,27 +74,36 @@ def node_information_at_index(idx: int = None):
     my_graph.display_graph()
 
 
-def test_tree():
+def test_tree(iterations = 0):
+    """
+    main function for computing answer
+    """
     #read in pieces & create Piece()
     my_pieces = []
     with open("pieces.csv", 'r') as file:
         csvreader = csv.reader(file)
-        header = next(csvreader)
+        header = next(csvreader) #skip the header
         for row in csvreader:
             my_pieces.append(Piece(int(row[0]), int(row[1])))
-    my_graph = Graph(my_pieces)
-    for piece in my_graph.pieces:
-        print("piece with width " + str(piece.width) + " and height " + str(piece.height) + " is color " + piece.color)
+    my_graph = Graph(my_pieces) #root graph
+    #print piece descriptions
+    for piece in my_graph.pieces:  print("piece with width " + str(piece.width) + " and height " + str(piece.height) + " is color " + piece.color)
     root = TreeNode(my_graph)
+    #get map data
     with open("map.json") as file:
         content = file.read()
         data_dict = json.loads(content)
+    #create map with map data
     my_graph.map_creator(data_dict["directions"], data_dict["line_lengths"])
+
     my_graph.plot_map()
-    root.add_children(root.data.fill_perimater())
-    for i in range(4):
+
+    #since I don't know the amount of iterations it will take, I need to define the number of iterations and manually iterate
+    #This can be easily fixed
+    root.add_children(root.data.solve())
+    for i in range(iterations):
         for leaf in root.get_leaves():
-            leaf.add_children(leaf.data.fill_perimater())
+            leaf.add_children(leaf.data.solve())
     write_data(root)
     my_graph.display_graph()
 
@@ -139,7 +148,7 @@ def random_map(width, height):
     print("done")
     fig.show()
 
-test_tree()
+test_tree(4)
 
 
 """

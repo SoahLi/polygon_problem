@@ -44,12 +44,15 @@ class Piece:
         return orientations
     
     class Orientation:
+        """
+        Holds data for specific orientation of piece
+        Args:
+            coordinates: piece coordinates
+            color: piece color
+        """
         def __init__(self,coordinates, color):
-            self.coordinates= coordinates
+            self.coordinates = coordinates
             self.color = color
-        def set_score(self, score):
-            self.score = score
-
 
 
     def get_width(self):

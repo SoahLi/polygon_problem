@@ -42,11 +42,6 @@ class TreeNode:
         else:
             raise ValueError("Child node not found in the children list")
     
-    def count_nodes(self):
-        count = 1  # Start with the current node itself
-        for child in self.children:
-            count += child.count_nodes()
-        return count
     
     def get_leaves(self):
         leaves = []
@@ -114,7 +109,7 @@ class TreeNode:
         return data
 
 
-    def grab_data_at_index(self, target_index):
+    def grab_data_at_index_from_file(self, target_index):
         with open("tree_data.json", "r") as file:
             content = file.read()
             data_dict = json.loads(content)
