@@ -105,6 +105,7 @@ def test_tree(iterations = 0):
         for leaf in root.get_leaves():
             leaf.add_children(leaf.data.solve())
     write_data(root)
+    print("data written")
     my_graph.display_graph()
 
 
@@ -148,7 +149,10 @@ def random_map(width, height):
     print("done")
     fig.show()
 
-test_tree(4)
+test_tree(6)
+#node_information_at_index(697)
+
+
 
 
 """

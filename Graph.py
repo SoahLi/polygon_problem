@@ -231,7 +231,6 @@ class Graph:
                 else:
                     self.ax.collections[-1].remove()
                     self.GeoSeries_pieces_placed.pop(-1)
-
         if not new_graphs:return None
         return new_graphs
             
