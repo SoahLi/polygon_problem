@@ -1,5 +1,6 @@
 import json
 import jsbeautifier
+import matplotlib.pyplot as plt
 
 class TreeNode:
     total_nodes = 0
