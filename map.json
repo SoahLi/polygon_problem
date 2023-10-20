@@ -1,5 +1,5 @@
 {
-    "directions": ["e", "n", "e","n","w","n","w","s","w","s"],
-    "line_lengths": [5,3,5,10,5,2,2,10,3,5]
+    "directions": ["e","n","e","n","w","s"],
+    "line_lengths": [8,3,4,7,12,10]
     
 }

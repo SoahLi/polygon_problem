@@ -6,7 +6,7 @@ Length, Width
 1,1
 
 "directions": ["e", "n", "w", "s"],
-"line_lengths": [4,4,4,4]
+"line_lengths": [2,2,2,2]
 
 Test 1
 Length, Width

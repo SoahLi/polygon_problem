@@ -73,44 +73,6 @@ class Graph:
             f"Pieces Placed: \n{pieces_placed_str}\n" \
             f"Try Point: {self.try_point}\n"
 
-    def map_creator(self, directions: list[str], line_lengths: list[str]):
-        """
-        Create a Map() object based off of a list of directions and line_lengths
-        """
-        if not line_lengths and not directions:
-            return
-        if len(line_lengths) != len(directions):
-            IndexExror: print("amount of lines and their dircetions do not match")
-            return
-        def create_coordinates(directions, line_lengths):
-            num_lines = len(line_lengths)
-            x_coordinates = [0]
-            y_coordinates = [0]
-            for i in range(num_lines):
-                if directions[i] == "n":
-                    x_coordinates.append(x_coordinates[-1] + 0)
-                    y_coordinates.append(y_coordinates[-1] + line_lengths[i])
-                elif directions[i] == "e":
-                    x_coordinates.append(x_coordinates[-1] + line_lengths[i])
-                    y_coordinates.append(y_coordinates[-1] + 0)                 
-                elif directions[i] == "s":
-                    x_coordinates.append(x_coordinates[-1] + 0)
-                    y_coordinates.append(y_coordinates[-1] - line_lengths[i])
-                    if y_coordinates[-1] < 0:
-                        y_coordinates = self.shift_graph(y_coordinates, -y_coordinates[-1])
-                elif directions[i] == "w":
-                    x_coordinates.append(x_coordinates[-1] - line_lengths[i])
-                    y_coordinates.append(y_coordinates[-1] + 0)
-                    if x_coordinates[-1] < 0:
-                        x_coordinates = self.shift_graph(x_coordinates, -x_coordinates[-1])
-            #x_coordinates, y_coordinates = shift_graph(x_coordinates, 2), shift_graph(y_coordinates, 2)
-            
-            return [(x, y) for x, y in zip(x_coordinates, y_coordinates)]
-        the_map = Map(create_coordinates(directions, line_lengths))
-        if self.map == None: 
-            self.map = the_map
-        return the_map
-
     def solve(self):
         """
         for each piece, determine whether it can fit at the try_point 0,0
@@ -204,7 +166,6 @@ class Graph:
 
         #method instuction start
         new_graphs = [] #child_graphs
-        print(len(self.pieces))
         #for each piece
         for index in range(len(self.pieces)):
             #for each orientation of each piece
@@ -234,6 +195,8 @@ class Graph:
                 else:
                     self.ax.collections[-1].remove()
                     self.GeoSeries_pieces_placed.pop(-1)
+        plt.close(self.fig)
+        print(plt.get_fignums())
         if not new_graphs:
             print("returning None")
             return None
@@ -264,7 +227,6 @@ class Graph:
         return GeoSeries_pieces
     
     def animate(self, interval: int = 500):
-        print('hello')
         def update(obj_coordinates):
             if len(self.ax.collections) > self.total_pieces_placed:
                 self.ax.collections[self.total_pieces_placed-self.current_piece_index].remove()
