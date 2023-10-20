@@ -53,7 +53,7 @@ def print_node_information(root: TreeNode):
         print()
 
 
-def node_information_at_index(idx: int = None):
+def node_information_at_highest_index(idx: int = None):
     def get_data_at_index(target_index):
         with open("tree_data.json", "r") as file:
             content = file.read()
@@ -100,13 +100,22 @@ def test_tree(iterations = 0):
 
     #since I don't know the amount of iterations it will take, I need to define the number of iterations and manually iterate
     #This can be easily fixed
-    root.add_children(root.data.solve())
-    for i in range(iterations):
+    # root.add_branches(root.data.solve())
+    # for i in range(iterations):
+    #     for leaf in root.get_leaves():
+    #         leaf.add_branches(leaf.data.solve())
+    
+
+    branches = root.data.solve()
+    branches = list(filter(lambda branch: branch is not None, branches))
+    root.add_branches(branches)
+    while branches:
         for leaf in root.get_leaves():
-            leaf.add_children(leaf.data.solve())
+            branches = leaf.data.solve()
+            print(branches)
+            leaf.add_branches(branches)
     write_data(root)
     print("data written")
-    my_graph.display_graph()
 
 
 
@@ -148,8 +157,8 @@ def random_map(width, height):
         all_GeoSeries_lines.append(current_GeoSeries_line)
     print("done")
     fig.show()
-
-test_tree(6)
+test_tree()
+# node_information_at_highest_index(697)
 #node_information_at_index(697)
 
 
