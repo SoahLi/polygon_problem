@@ -23,18 +23,18 @@ class TreeNode:
             ret += child.__str__(level + 1)
         return ret
 
-    def add_child(self, child_node):
+    def add_branch(self, child_node):
         if isinstance(child_node, TreeNode):
             self.children.append(child_node)
         else:
             raise TypeError("Child node must be of type TreeNode")
 
-    def add_children(self, data_list):
+    def add_branches(self, data_list):
         if data_list == None:
             return
         for data in data_list:
             new_child = TreeNode(data)
-            self.add_child(new_child)
+            self.add_branch(new_child)
 
     def remove_child(self, child_node):
         if child_node in self.children:

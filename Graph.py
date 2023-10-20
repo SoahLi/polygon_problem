@@ -6,7 +6,9 @@ import geopandas as gpd
 from shapely.geometry import Polygon, MultiPolygon, Point
 import copy
 
-
+#TODO
+#when is graph completed?
+#memory issues
 class Graph:
     def __init__(self, pieces: list = [], map: Map = None, pieces_placed: list[Piece] = [], try_point: tuple = (0,0)):
         self.fig, self.ax = plt.subplots()
@@ -172,7 +174,7 @@ class Graph:
             Traverse the edge of the map until a new point is found that does not touch 
             another piece(The point usually lies on the corner of a piece)
             """
-            #grab coordinates of map exterior corners
+            #grab coordinates of map corners
             map_coords = [list(coord) for coord in self.map.shapely_map.exterior.coords[::-1]]
             current_coord = [map_coords[0][0], map_coords[0][1]]
             for i in range(1, len(map_coords)-1):
@@ -202,6 +204,7 @@ class Graph:
 
         #method instuction start
         new_graphs = [] #child_graphs
+        print(len(self.pieces))
         #for each piece
         for index in range(len(self.pieces)):
             #for each orientation of each piece
@@ -231,7 +234,9 @@ class Graph:
                 else:
                     self.ax.collections[-1].remove()
                     self.GeoSeries_pieces_placed.pop(-1)
-        if not new_graphs:return None
+        if not new_graphs:
+            print("returning None")
+            return None
         return new_graphs
             
 
