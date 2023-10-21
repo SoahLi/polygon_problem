@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import geopandas as gpd
 from shapely.geometry import Polygon, MultiPolygon, Point
 import copy
+import os, psutil
 
 #TODO
 #when is graph completed?
@@ -197,6 +198,8 @@ class Graph:
                     self.GeoSeries_pieces_placed.pop(-1)
         plt.close(self.fig)
         #print(plt.get_fignums())
+        print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2)
+        # my_driver.node_information_at_highest_index(633)
         if not new_graphs:
             return None
         return new_graphs
