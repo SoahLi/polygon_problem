@@ -196,9 +196,8 @@ class Graph:
                     self.ax.collections[-1].remove()
                     self.GeoSeries_pieces_placed.pop(-1)
         plt.close(self.fig)
-        print(plt.get_fignums())
+        #print(plt.get_fignums())
         if not new_graphs:
-            print("returning None")
             return None
         return new_graphs
             

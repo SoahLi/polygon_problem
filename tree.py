@@ -1,5 +1,4 @@
 import json
-import jsbeautifier
 import matplotlib.pyplot as plt
 
 class TreeNode:

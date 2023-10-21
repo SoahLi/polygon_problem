@@ -1,5 +1,7 @@
 from driver import Driver
 import psutil
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 my_driver = Driver()
 my_driver.solve_puzzle()
 # my_driver.node_information_at_highest_index(172)

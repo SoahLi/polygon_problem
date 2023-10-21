@@ -197,7 +197,7 @@ class Driver:
     #             current_GeoSeries_line = gpd.GeoSeries(LineString([current_coord, [current_coord[0] + current_line, current_coord[1]]])).plot(ax = ax)
     #             current_coord[0] += current_line
     #         if current_direction == "w":
-    #             current_GeoSeries_line = gpd.GeoSeries(LineString([current_coord, [current_coord[0] - current_line, current_coord[1]]])).plot(ax = ax)
+    #             current_GeoSeries_lin/Users/owenturnbull/Documents/cs_projects/polygon_problem/map.jsone = gpd.GeoSeries(LineString([current_coord, [current_coord[0] - current_line, current_coord[1]]])).plot(ax = ax)
     #             if current_coord[0] - current_line < 0: break #continue
     #             current_coord[0] -= current_line
     #         for line in all_GeoSeries_lines:
