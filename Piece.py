@@ -1,9 +1,10 @@
 from shapely.geometry import Polygon
 import geopandas as gpd
-from random import randint
+from random import random
 
 class Piece:
-    colors = ['orange', 'yellow', 'pink', 'green', "magenta", 'cyan']
+    def color_generator(self):
+        return ((random(), random(), random()))
     def __init__(self, width, height):
         """
         Args:
@@ -12,7 +13,7 @@ class Piece:
         """
         self.width = width
         self.height = height
-        self.color = Piece.colors[randint(0, len(Piece.colors)-1)]
+        self.color = self.color_generator()
         self.area = width*height
         self.default_orientation = [[0,0],[width,0],[width,height],[0,height]]  #left, right, up,left
         self.orientations = self.get_all_orientations(self.default_orientation)

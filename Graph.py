@@ -7,21 +7,17 @@ from shapely.geometry import Polygon, MultiPolygon, Point
 import copy
 import os, psutil
 
-#TODO
-#when is graph completed?
-#memory issues
+
 class Graph:
     def __init__(self, pieces: list = [], map: Map = None, pieces_placed: list[Piece] = [], try_point: tuple = (0,0)):
         self.fig, self.ax = plt.subplots()
         #These ticks are helpful for now but will need to make dynamic at some point
-        self.x_values = [0, 5, 10, 15]
-        self.y_values = [0, 5, 10, 15]
+        self.x_values = [i*5 for i in range(100)]
+        self.y_values = [i*5 for i in range(100)]
         self.ax.set_xticks(self.x_values)
         self.ax.set_yticks(self.y_values)
-        for x_tick in self.x_values:
-            self.ax.axvline(x=x_tick, color='gray', linestyle='-', alpha=0.5)
-        for y_tick in self.y_values:
-            self.ax.axhline(y=y_tick, color='gray', linestyle='-', alpha=0.5)
+        self.ax.axvline(x=self.x_values[0], color='black', linestyle='-', alpha=0.5)
+        self.ax.axhline(y=self.y_values[0], color='black', linestyle='-', alpha=0.5)
         self.map = map
         self.border = None
         self.pieces_placed = pieces_placed
@@ -56,7 +52,7 @@ class Graph:
 
     def plot_map(self):
         self.border = gpd.GeoSeries(self.map.border)
-        self.border.plot(ax = self.ax, facecolor = "none", edgecolor = "black")
+        self.border.plot(ax = self.ax, facecolor = "none", edgecolor = "none")
         gpd.GeoSeries(self.map.shapely_map).plot(ax = self.ax, color='blue')
 
     """

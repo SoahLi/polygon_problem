@@ -8,7 +8,7 @@ from shapely.geometry import Polygon, LineString
 from graph import Graph
 import csv
 import json
-from random import randint
+from random import random
 
 
 class Driver:
@@ -117,9 +117,11 @@ class Driver:
     #         print(my_nodes[i-1])
     #         print()
 
+    def color_generator(self):
+        return ((random(), random(), random()))
 
     #need to change this so it works without idx
-    def node_information_at_highest_index(self, idx: int = None):
+    def node_information_at_highest_index(self):
         def get_data_at_index(target_index):
             with open("tree_data.json", "r") as file:
                 content = file.read()
@@ -133,10 +135,9 @@ class Driver:
                         return result
                 return None
             return dfs(data_dict)
-        colors = ['orange', 'yellow', 'pink', 'green', "magenta", 'cyan']
         data = self.file_formater()
         d = get_data_at_index(data["highest_node"])
-        my_graph = Graph([Piece(x,y) for x,y in d['pieces_len_height']], Map(d['map_coordinates']), [Piece.Orientation(coord, colors[randint(0, len(colors)-1)]) for coord in d['pieces_placed_coordinates']], d['try_point']) 
+        my_graph = Graph([Piece(x,y) for x,y in d['pieces_len_height']], Map(d['map_coordinates']), [Piece.Orientation(coord, self.color_generator()) for coord in d['pieces_placed_coordinates']], d['try_point']) 
         my_graph.display_graph()
 
 
