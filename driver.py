@@ -85,9 +85,9 @@ class Driver:
             data_dict = json.loads(content)
         def dfs(node: dict):
             count = 1  # Initialize count to 1 for the current node
-            if "children" in node:
-                for child in node["children"]:
-                    count += dfs(child)  # Recursively traverse child nodes
+            if "branches" in node:
+                for branch in node["branches"]:
+                    count += dfs(branch)  # Recursively traverse branch nodes
             return count
         
         count = dfs(data_dict)
@@ -129,8 +129,8 @@ class Driver:
             def dfs(node):
                 if int(node['index']) == target_index:
                     return node['data']
-                for child in node['children']:
-                    result = dfs(child)
+                for branch in node['branches']:
+                    result = dfs(branch)
                     if result:
                         return result
                 return None

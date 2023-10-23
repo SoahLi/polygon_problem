@@ -5,70 +5,70 @@ class TreeNode:
     total_nodes = 0
     def __init__(self, data):
         self.data = data
-        self.children = []
+        self.branches = []
         TreeNode.total_nodes += 1  # Increment the total number of nodes
         self.index = TreeNode.total_nodes
 
     def __repr__(self, level=0):
         # For better visualization when printing the tree
         ret = "\t" * level + repr(self.index) + "\n"
-        for child in self.children:
-            ret += child.__repr__(level + 1)
+        for branch in self.branches:
+            ret += branch.__repr__(level + 1)
         return ret
 
     def __str__(self, level=0):
         # For better visualization when printing the tree
         ret = "\t" * level + str(self.data) + "\n"
-        for child in self.children:
-            ret += child.__str__(level + 1)
+        for branch in self.branches:
+            ret += branch.__str__(level + 1)
         return ret
 
-    def add_branch(self, child_node):
-        if isinstance(child_node, TreeNode):
-            self.children.append(child_node)
+    def add_branch(self, branch_node):
+        if isinstance(branch_node, TreeNode):
+            self.branches.append(branch_node)
         else:
-            raise TypeError("Child node must be of type TreeNode")
+            raise TypeError("branch node must be of type TreeNode")
 
     def add_branches(self, data_list):
         if data_list == None:
             return
         for data in data_list:
-            new_child = TreeNode(data)
-            self.add_branch(new_child)
+            new_branch = TreeNode(data)
+            self.add_branch(new_branch)
 
-    def remove_child(self, child_node):
-        if child_node in self.children:
-            self.children.remove(child_node)
+    def remove_branch(self, branch_node):
+        if branch_node in self.branches:
+            self.branches.remove(branch_node)
         else:
-            raise ValueError("Child node not found in the children list")
+            raise ValueError("branch node not found in the branchren list")
     
     
     def get_leaves(self):
         leaves = []
         def dfs(node):
-            if not node.children:
+            if not node.branches:
                 leaves.append(node)
             else:
-                for child in node.children:
-                    dfs(child)
+                for branch in node.branches:
+                    dfs(branch)
         dfs(self)
         return leaves
     
     def count_leaves(self):
-        if not self.children:
+        if not self.branches:
             return 1
         else:
             count = 0
-            for child in self.children:
-                count += child.count_leaves()
+            for branch in self.branches:
+                count += branch.count_leaves()
             return count
         
     def get_node_at_index(self, target_index):
         def dfs(node):
             if node.index == target_index:
                 return node
-            for child in node.children:
-                result = dfs(child)
+            for branch in node.branches:
+                result = dfs(branch)
                 if result:
                     return result
             return None
@@ -83,9 +83,9 @@ class TreeNode:
             current_node = queue.pop(0)  # Dequeue the first node in the queue
             nodes_data.append(current_node.data)
 
-            # Enqueue all children of the current node
-            for child in current_node.children:
-                queue.append(child)
+            # Enqueue all branchren of the current node
+            for branch in current_node.branches:
+                queue.append(branch)
 
         return nodes_data
     
@@ -99,12 +99,12 @@ class TreeNode:
                 "pieces_placed_coordinates": [orientation.coordinates for orientation in node.data.pieces_placed],
                 "try_point": node.data.try_point,
             },
-            "children": [],
+            "branches": [],
         }
 
-        for child_node in node.children:
-            child_json = self.tree_to_dict(child_node)
-            data["children"].append(child_json)
+        for branch in node.branches:
+            branch_json = self.tree_to_dict(branch)
+            data["branches"].append(branch_json)
             
         return data
 
@@ -117,8 +117,8 @@ class TreeNode:
         def dfs(node):
             if int(node['index']) == target_index:
                 return node['data']
-            for child in node['children']:
-                result = dfs(child)
+            for branch in node['branches']:
+                result = dfs(branch)
                 if result:
                     return result
             return None

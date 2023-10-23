@@ -64,3 +64,18 @@ Length, Width
 
 "directions": ["e", "n", "e","n","w","n","w","s","w","s"],
 "line_lengths": [5,3,5,10,5,2,2,10,3,5]
+
+Test 6
+Length, Width
+5, 10
+15, 3
+7, 3
+12, 2
+5, 2
+10, 2
+3, 1
+4, 1
+4, 2
+3, 5
+
+
