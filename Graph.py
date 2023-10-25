@@ -1,5 +1,5 @@
 from map import Map
-from piece import Piece
+from Piece import Piece
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd

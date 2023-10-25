@@ -1,11 +1,11 @@
 from map import Map
-from piece import Piece
+from Piece import Piece
 from tree import TreeNode
 from matplotlib.animation import FuncAnimation
 import matplotlib.pyplot as plt
 import geopandas as gpd
 from shapely.geometry import Polygon, LineString
-from graph import Graph
+from Graph import Graph
 import csv
 import json
 from random import random
@@ -154,15 +154,17 @@ class Driver:
         branches = self.root.data.solve()
         branches = list(filter(lambda branch: branch is not None, branches))
         self.root.add_branches(branches)
-        while branches:
+        leaf_count = 0
+        while True:
             leaves = self.root.get_leaves()
             for leaf in leaves:
                 branches = leaf.data.solve()
-                if(branches != None):
-                    leaf.add_branches(branches)
-        self.write_data()
+                leaf.add_branches(branches)
+                if(branches != None): leaf_count += len(branches)
+            if(leaf_count == 0): break
+            leaf_count = 0
         print("data written")
-
+        self.write_data()
 
 
     #node_information_at_index(697)
