@@ -19,4 +19,4 @@ Polygon Problem is a puzzle-solving algorithm designed for rectangular and squar
 The algorithm's runtime may increase significantly with the addition of more pieces due to its brute-force nature. Implementing a divide and conquer method, introducing multi-threading, or exploring a breadth-first search approach would improve efficiency.
 
 ### Pieces that Split the Map
-Occasionally, the Shapely `.difference` method may return a MultiPolygon object as a result of a piece splitting a graph into two. Currently, this is an unavoidable error. To address this, you may need to solve each graph separately and then reintegrate the pieces used into the original graph.
+Occasionally, the Shapely `.difference` method may return a MultiPolygon object as a result of a piece splitting a graph into two. Currently, this is an unavoidable error. One solution may be to solve each split graph separately and then reintegrate the pieces used into the original graph.
