@@ -1,4 +1,4 @@
-# polygon_problem
+# Polygon Problem
 
 Polygon Problem is a puzzle-solving algorithm designed for rectangular and square puzzles. It leverages the relationship between Shapely and GeoPandas geometries to perform comparisons on different objects, and employs a multi-tree structure to efficiently store and evaluate graphs using breadth-first search. The custom interface is implemented using Matplotlib.
 
